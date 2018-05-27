@@ -1,35 +1,88 @@
+# KidsCanCode - Game Development with Pygame video series
+# Shmup game - part 1
+# Video link: https://www.youtube.com/watch?v=nGufy7weyGY
+# Player sprite and movement
 import pygame
+import random
 
+WIDTH = 600
+HEIGHT = 480
+FPS = 60
+
+# define colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+YELLOW = (255, 255, 0)
+
+# initialize pygame and create window
 pygame.init()
-screen = pygame.display.set_mode((400, 300))
-done = False
-is_blue = True
-x = 30
-y = 30
-
+pygame.mixer.init()
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Shmup!")
 clock = pygame.time.Clock()
 
-while not done:
+class Player(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((50, 40))
+        self.image.fill(GREEN)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = WIDTH / 2
+        self.rect.bottom = HEIGHT - 10
+        self.speedx = 0
+        self.speedy = 0
+
+    def update(self):
+        self.speedx = 0
+        self.speedy = 0
+        keystate = pygame.key.get_pressed()
+        if keystate[pygame.K_LEFT]:
+            self.speedx = -8
+        if keystate[pygame.K_RIGHT]:
+            self.speedx = 8
+        if keystate[pygame.K_DOWN]:
+            self.speedy = 8
+        if keystate[pygame.K_UP]:
+            self.speedy = -8
+
+        self.rect.x += self.speedx
+        #if self.rect.right > WIDTH: kann man verwenden um zu schauen, wann das Hintergrundbild weiter läuft
+        #    self.rect.right = WIDTH
+        #if self.rect.left < 0:
+           # self.rect.left = 0
+
+        self.rect.y += self.speedy
+        if self.rect.bottom > HEIGHT:
+            self.rect.bottom = HEIGHT
+        if self.rect.top < 0:
+            self.rect.top = 0
+
+all_sprites = pygame.sprite.Group()
+player = Player()
+all_sprites.add(player)
+
+# Game loop
+running = True
+while running:
+    # keep loop running at the right speed
+    clock.tick(FPS)
+    # Process input (events)
     for event in pygame.event.get():
+        # check for closing window
         if event.type == pygame.QUIT:
-            done = True
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-            is_blue = not is_blue
+            running = False
 
-    pressed = pygame.key.get_pressed()
-    if pressed[pygame.K_UP]: y -= 3
-    if pressed[pygame.K_DOWN]: y += 3
-    if pressed[pygame.K_LEFT]: x -= 3
-    if pressed[pygame.K_RIGHT]: x += 3
+    # Update
+    all_sprites.update()
 
-    screen.fill((0, 0, 0))
-    if is_blue:
-        color = (0, 128, 255)
-    else:
-        color = (255, 100, 0)
-    pygame.draw.rect(screen, color, pygame.Rect(x, y, 60, 60))
-
+    # Draw / render
+    screen.fill(BLACK)
+    all_sprites.draw(screen)
+    # *after* drawing everything, flip the display
     pygame.display.flip()
-    clock.tick(60)
 
+pygame.quit()
 
