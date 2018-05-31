@@ -43,6 +43,7 @@ class Player(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
 
         self.image = pygame.image.load("JungleAssetPack/Character/sprites/idle.gif").convert()#pygame.Surface((50, 40))
+        self.imageflip = pygame.transform.flip(self.image, True, False)
         self.playerwidth = self.image.get_width()
         self.playerheight = self.image.get_height()
         self.playerposx = self.playerwidth
@@ -65,7 +66,7 @@ class Player(pygame.sprite.Sprite):
             keystate = pygame.key.get_pressed()
             if keystate[pygame.K_LEFT]:
                 self.speedx = -8
-                self.image = pygame.image.load("JungleAssetPack/Character/sprites/run.gif").convert()
+                self.image = self.imageflip
             elif keystate[pygame.K_RIGHT]:
                 self.speedx = 8
                 self.image = pygame.image.load("JungleAssetPack/Character/sprites/run.gif").convert()
