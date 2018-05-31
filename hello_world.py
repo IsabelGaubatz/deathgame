@@ -42,7 +42,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = pygame.image.load("JungleAssetPack/Character/sprites/idle.gif").convert()#pygame.Surface((50, 40))
+        self.image = pygame.image.load("JungleAssetPack/Character/sprites/idle.gif").convert_alpha()#pygame.Surface((50, 40))
         self.imageflip = pygame.transform.flip(self.image, True, False)
         self.playerwidth = self.image.get_width()
         self.playerheight = self.image.get_height()
@@ -69,15 +69,15 @@ class Player(pygame.sprite.Sprite):
                 self.image = self.imageflip
             elif keystate[pygame.K_RIGHT]:
                 self.speedx = 8
-                self.image = pygame.image.load("JungleAssetPack/Character/sprites/run.gif").convert()
+                self.image = pygame.image.load("JungleAssetPack/Character/sprites/run.gif").convert_alpha()
             elif keystate[pygame.K_DOWN]:
                 self.speedy = 8
-                self.image = pygame.image.load("JungleAssetPack/Character/sprites/jump.png").convert()
+                self.image = pygame.image.load("JungleAssetPack/Character/sprites/jump.png").convert_alpha()
             elif keystate[pygame.K_UP]:
                 self.speedy = -8
-                self.image = pygame.image.load("JungleAssetPack/Character/sprites/landing.png").convert()
+                self.image = pygame.image.load("JungleAssetPack/Character/sprites/landing.png").convert_alpha()
             else:
-                self.image = pygame.image.load("JungleAssetPack/Character/sprites/idle.gif").convert()
+                self.image = pygame.image.load("JungleAssetPack/Character/sprites/idle.gif").convert_alpha()
 
 
             self.rect.x += self.speedx
