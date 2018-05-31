@@ -31,7 +31,7 @@ bg_size = pygame.transform.scale(bg, (800, 480))
 bgScaleWidth = bg_size.get_rect().width
 
 
-stageWidth = bgWidth*2
+stageWidth = bgScaleWidth*2
 
 
 startScrollingPosX = HW
@@ -42,11 +42,11 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = pygame.Surface((50, 40))
+        self.image = pygame.image.load("JungleAssetPack/Character/sprites/idle.gif").convert()#pygame.Surface((50, 40))
         self.playerwidth = self.image.get_width()
         self.playerheight = self.image.get_height()
         self.playerposx = self.playerwidth
-        self.image.fill(GREEN)
+        #self.image.fill(GREEN)
         self.rect = self.image.get_rect()
         self.rect.centerx = WIDTH / 2
         self.rect.bottom = HEIGHT - 10
@@ -59,34 +59,38 @@ class Player(pygame.sprite.Sprite):
 
 
     def update(self):
-        self.speedx = 0
-        self.speedy = 0
-        keystate = pygame.key.get_pressed()
-        if keystate[pygame.K_LEFT]:
-            self.speedx = -8
-        if keystate[pygame.K_RIGHT]:
-            self.speedx = 8
-        if keystate[pygame.K_DOWN]:
-            self.speedy = 8
-        if keystate[pygame.K_UP]:
-            self.speedy = -8
+
+            self.speedx = 0
+            self.speedy = 0
+            keystate = pygame.key.get_pressed()
+            if keystate[pygame.K_LEFT]:
+                self.speedx = -8
+                self.image = pygame.image.load("JungleAssetPack/Character/sprites/run.gif").convert()
+            elif keystate[pygame.K_RIGHT]:
+                self.speedx = 8
+                self.image = pygame.image.load("JungleAssetPack/Character/sprites/run.gif").convert()
+            elif keystate[pygame.K_DOWN]:
+                self.speedy = 8
+                self.image = pygame.image.load("JungleAssetPack/Character/sprites/jump.png").convert()
+            elif keystate[pygame.K_UP]:
+                self.speedy = -8
+                self.image = pygame.image.load("JungleAssetPack/Character/sprites/landing.png").convert()
+            else:
+                self.image = pygame.image.load("JungleAssetPack/Character/sprites/idle.gif").convert()
 
 
-        self.rect.x += self.speedx
-        if self.rect.right > WIDTH: #kann man verwenden um zu schauen, wann das Hintergrundbild weiter läuft
-            self.rect.right = WIDTH
-        if self.rect.left < 0:
-            self.rect.left = 0
+            self.rect.x += self.speedx
+            if self.rect.right > WIDTH: #kann man verwenden um zu schauen, wann das Hintergrundbild weiter läuft
+                self.rect.right = WIDTH
+            if self.rect.left < 0:
+                self.rect.left = 0
 
-        self.rect.y += self.speedy
-        if self.rect.bottom > HEIGHT:
-            self.rect.bottom = HEIGHT
-        if self.rect.top < 0:
-            self.rect.top = 0
-        elif self.playerposx > stageWidth - startScrollingPosX: self.playerposx - stageWidth + WIDTH
-        else:
-            self.playerposx = startScrollingPosX
-            self.stageposx += -self.speedx
+            self.rect.y += self.speedy
+            if self.rect.bottom > HEIGHT:
+                self.rect.bottom = HEIGHT
+            if self.rect.top < 0:
+                self.rect.top = 0
+
 
 
 
@@ -99,11 +103,14 @@ all_sprites.add(player)
 # Game loop
 running = True
 while running:
+
     rel_x = x % bgScaleWidth
     screen.blit(bg_size, (rel_x - bgScaleWidth, 0))
     if rel_x < WIDTH:
         screen.blit(bg_size, (rel_x, 0))
     x -= 1
+
+
     # keep loop running at the right speed
     clock.tick(FPS)
     # Process input (events)
