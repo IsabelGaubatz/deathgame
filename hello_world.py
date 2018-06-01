@@ -19,6 +19,8 @@ bg = pygame.image.load("JungleAssetPack/parallaxBackground/plx-5.png").convert()
 # bgWidth, bgHeight = bg.get_rect().size
 bg_size = pygame.transform.scale(bg, (800, 480))
 bgScaleWidth = bg_size.get_rect().width
+ground = pygame.image.load("JungleAssetPack/jungletileset/Jungle_Ground.png").convert_alpha()
+ground_size = pygame.transform.scale(ground, (800, 60))
 
 # initialize for background scrolling
 stageWidth = bgScaleWidth * 2
@@ -30,8 +32,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = pygame.image.load(
-            "JungleAssetPack/Character/sprites/idle.gif").convert_alpha()  # pygame.Surface((50, 40))
+        self.image = pygame.image.load("JungleAssetPack/Character/sprites/idle.gif").convert_alpha()
         self.imageRun = pygame.image.load("JungleAssetPack/Character/sprites/run.gif").convert_alpha()
         self.imageflip = pygame.transform.flip(self.imageRun, True, False)
         self.playerwidth = self.image.get_width()
@@ -113,6 +114,11 @@ while running:
     screen.blit(bg_size, (rel_x - bgScaleWidth, 0))
     if rel_x < WIDTH:
         screen.blit(bg_size, (rel_x, 0))
+
+    rel_ground = stagePosX % ground_size.get_rect().width
+    screen.blit(ground_size, (rel_ground - ground_size.get_rect().width, 420))
+    if rel_ground < WIDTH:
+            screen.blit(ground_size, (rel_ground, 420))
 
     Player()
 
