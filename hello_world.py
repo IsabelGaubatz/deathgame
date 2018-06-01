@@ -16,14 +16,13 @@ clock = pygame.time.Clock()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("DeathGame")
 bg = pygame.image.load("JungleAssetPack/parallaxBackground/plx-5.png").convert()
-bgWidth, bgHeight = bg.get_rect().size
+# bgWidth, bgHeight = bg.get_rect().size
 bg_size = pygame.transform.scale(bg, (800, 480))
 bgScaleWidth = bg_size.get_rect().width
 
+# initialize for background scrolling
 stageWidth = bgScaleWidth * 2
-
 startScrollingPosX = HW
-
 stagePosX = 0
 
 
@@ -39,7 +38,7 @@ class Player(pygame.sprite.Sprite):
         self.playerheight = self.image.get_height()
         self.playerposx = self.playerwidth
         self.newHeight = pygame.transform.scale(self.image, (19, 17))
-        # self.image.fill(GREEN)
+        # rect
         self.rect = self.image.get_rect()
         self.rect.centerx = WIDTH / 2
         self.rect.bottom = HEIGHT - 50
@@ -102,11 +101,12 @@ running = True
 while running:
 
     if player.playerposx < startScrollingPosX:
-        circlePosX = player.playerposx
+        newPlayerPosX = player.playerposx
     elif player.playerposx > stageWidth - startScrollingPosX:
-        circlePosX = player.playerposx - stageWidth + WIDTH
+        newPlayerPosX = player.playerposx - stageWidth + WIDTH
     else:
-        circlePosX = startScrollingPosX
+        newPlayerPosX = startScrollingPosX
+
     stagePosX += -player.speedx
 
     rel_x = stagePosX % bgScaleWidth
@@ -123,7 +123,6 @@ while running:
         # check for closing window
         if event.type == pygame.QUIT:
             running = False
-    # screen.blit(bg_size, [0, 0])
 
     # Update
     all_sprites.update()
