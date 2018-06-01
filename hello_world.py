@@ -15,15 +15,39 @@ pygame.mixer.init()
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("DeathGame")
-bg = pygame.image.load("JungleAssetPack/parallaxBackground/plx-5.png").convert()
-# bgWidth, bgHeight = bg.get_rect().size
-bg_size = pygame.transform.scale(bg, (800, 480))
-bgScaleWidth = bg_size.get_rect().width
+
 ground = pygame.image.load("JungleAssetPack/jungletileset/Jungle_Ground.png").convert_alpha()
 ground_size = pygame.transform.scale(ground, (800, 60))
 
+
+# bg 1
+bg1 = pygame.image.load("JungleAssetPack/parallaxBackground/plx-1.png").convert_alpha()
+bg1_size = pygame.transform.scale(bg1, (800, 480))
+bgScaleWidth1 = bg1_size.get_rect().width
+
+# bg 2
+bg2 = pygame.image.load("JungleAssetPack/parallaxBackground/plx-2.png").convert_alpha()
+bg2_size = pygame.transform.scale(bg2, (800, 480))
+bgScaleWidth2 = bg2_size.get_rect().width
+
+# bg 3
+bg3 = pygame.image.load("JungleAssetPack/parallaxBackground/plx-3.png").convert_alpha()
+bg3_size = pygame.transform.scale(bg3, (800, 480))
+bgScaleWidth3 = bg3_size.get_rect().width
+
+# bg 4
+bg4 = pygame.image.load("JungleAssetPack/parallaxBackground/plx-4.png").convert_alpha()
+bg4_size = pygame.transform.scale(bg4, (800, 480))
+bgScaleWidth4 = bg4_size.get_rect().width
+
+# bg 5
+bg5 = pygame.image.load("JungleAssetPack/parallaxBackground/plx-5.png").convert_alpha()
+bg5_size = pygame.transform.scale(bg5, (800, 480))
+bgScaleWidth5 = bg5_size.get_rect().width
+
+
 # initialize for background scrolling
-stageWidth = bgScaleWidth * 2
+stageWidth = bgScaleWidth5 * 2
 startScrollingPosX = HW
 stagePosX = 0
 
@@ -110,10 +134,19 @@ while running:
 
     stagePosX += -player.speedx
 
-    rel_x = stagePosX % bgScaleWidth
-    screen.blit(bg_size, (rel_x - bgScaleWidth, 0))
+    rel_x = stagePosX % bgScaleWidth5
+    screen.blit(bg1_size, (rel_x - bgScaleWidth1, 0))
+    screen.blit(bg2_size, (rel_x - bgScaleWidth2, 0))
+    screen.blit(bg3_size, (rel_x - bgScaleWidth3, 0))
+    screen.blit(bg4_size, (rel_x - bgScaleWidth4, 0))
+    screen.blit(bg5_size, (rel_x - bgScaleWidth5, 0))
+
     if rel_x < WIDTH:
-        screen.blit(bg_size, (rel_x, 0))
+        screen.blit(bg1_size, (rel_x, 0))
+        screen.blit(bg2_size, (rel_x, 0))
+        screen.blit(bg3_size, (rel_x, 0))
+        screen.blit(bg4_size, (rel_x, 0))
+        screen.blit(bg5_size, (rel_x, 0))
 
     rel_ground = stagePosX % ground_size.get_rect().width
     screen.blit(ground_size, (rel_ground - ground_size.get_rect().width, 420))
