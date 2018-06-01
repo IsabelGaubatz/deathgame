@@ -20,9 +20,11 @@ bgWidth, bgHeight = bg.get_rect().size
 bg_size = pygame.transform.scale(bg, (800, 480))
 bgScaleWidth = bg_size.get_rect().width
 
-stageWidth = bgScaleWidth * 2  # wird nicht verwendet
+stageWidth = bgScaleWidth * 2
 
-startScrollingPosX = HW  # wird nicht verwendet
+startScrollingPosX = HW
+
+stagePosX = 0
 
 
 class Player(pygame.sprite.Sprite):
@@ -79,10 +81,10 @@ class Player(pygame.sprite.Sprite):
                 self.rect.bottom = HEIGHT - 50
 
         self.rect.x += self.speedx
-        if self.rect.right > WIDTH:  # kann man verwenden um zu schauen, wann das Hintergrundbild weiter läuft
-            self.rect.right = WIDTH
-        if self.rect.left < 0:
-            self.rect.left = 0
+        if self.rect.right > WIDTH - 100:
+            self.rect.right = WIDTH - 100
+        if self.rect.left < 100:
+            self.rect.left = 100
 
         self.rect.y += self.speedy
         if self.rect.bottom > HEIGHT:
@@ -99,11 +101,20 @@ all_sprites.add(player)
 running = True
 while running:
 
-    rel_x = x % bgScaleWidth
+    if player.playerposx < startScrollingPosX:
+        circlePosX = player.playerposx
+    elif player.playerposx > stageWidth - startScrollingPosX:
+        circlePosX = player.playerposx - stageWidth + WIDTH
+    else:
+        circlePosX = startScrollingPosX
+    stagePosX += -player.speedx
+
+    rel_x = stagePosX % bgScaleWidth
     screen.blit(bg_size, (rel_x - bgScaleWidth, 0))
     if rel_x < WIDTH:
         screen.blit(bg_size, (rel_x, 0))
-    x -= 1
+
+    Player()
 
     # keep loop running at the right speed
     clock.tick(FPS)
