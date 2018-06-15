@@ -15,6 +15,7 @@ pygame.mixer.init()
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("DeathGame")
+pygame.display.toggle_fullscreen()
 
 ground = pygame.image.load("JungleAssetPack/jungletileset/Jungle_Ground.png").convert_alpha()
 ground_size = pygame.transform.scale(ground, (800, 60))
@@ -79,10 +80,13 @@ class Player(pygame.sprite.Sprite):
 
         # Key pressed: constant movement
         keystate = pygame.key.get_pressed()
-        if keystate[pygame.K_LEFT]:
+        mousepos = pygame.mouse.get_pos()
+        mousepress = pygame.mouse.get_pressed()
+        pygame.mouse.set_visible(True)
+        if keystate[pygame.K_LEFT] or mousepos < (HW, HEIGHT) and mousepress == (1, 0, 0):
             self.speedx = -8
             self.image = self.imageflip
-        elif keystate[pygame.K_RIGHT]:
+        elif keystate[pygame.K_RIGHT] or mousepos > (HW, HEIGHT) and mousepress == (1, 0, 0):
             self.speedx = 8
             self.image = pygame.image.load("JungleAssetPack/Character/sprites/run.gif").convert_alpha()
         elif keystate[pygame.K_DOWN]:
@@ -162,6 +166,7 @@ while running:
         # check for closing window
         if event.type == pygame.QUIT:
             running = False
+
 
     # Update
     all_sprites.update()
