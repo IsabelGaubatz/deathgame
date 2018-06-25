@@ -77,17 +77,19 @@ class Player(pygame.sprite.Sprite):
         self.images.append(load_image(path + 'idle-png/idle-10.png').convert_alpha())
         self.images.append(load_image(path + 'idle-png/idle-11.png').convert_alpha())
         self.images.append(load_image(path + 'idle-png/idle-12.png').convert_alpha())
+        self.firstIndex = 0
         self.index = 0
         self.imageRun = pygame.image.load(path + "run.gif").convert_alpha()
         self.imageflip = pygame.transform.flip(self.imageRun, True, False)
 
         # player
-        # self.playerwidth = self.images[self.index].get_width()
-        # self.playerheight = self.images[self.index].get_height()
-        self.playerwidth = self.images[self.index].get_width() * 2
-        self.playerheight = self.images[self.index].get_height() * 2
+        self.playerwidth = self.images[self.index].get_width()
+        self.playerheight = self.images[self.index].get_height()
+        # self.playerwidth = self.images[self.index].get_width() * 2
+        # self.playerheight = self.images[self.index].get_height() * 2
         self.playerposx = self.playerwidth
         self.HPH = int(round(self.playerheight / 2))  # float to int
+        # nachfolgende zeile nachher raus nehmen
         self.normalHeight = pygame.transform.scale(self.images[self.index], (self.playerwidth, self.playerheight))
         self.newHeight = pygame.transform.scale(self.images[self.index], (self.playerwidth, self.HPH))
 
@@ -120,12 +122,16 @@ class Player(pygame.sprite.Sprite):
             self.image = self.newHeight
             self.rect.bottom = HEIGHT - 50 + 19
         else:
-            self.index += 1
+            self.firstIndex += 1
+            if self.firstIndex == 3:  # Verlangsamen des GIFs, normale Geschw. = 1
+                self.index += 1
+                self.firstIndex = 0
             if self.index >= len(self.images):
                 self.index = 0
-            # self.image = self.images[self.index]
+            self.image = self.images[self.index]
             self.rect.bottom = HEIGHT - 50
-            self.image = self.normalHeight
+            # nachher folgende zeile wieder raus nehmen, vergrößert Player, GIF funktioniert dann nicht mehr
+            # self.image = self.normalHeight
 
         # Key pressed: only one move
         if event.type == pygame.KEYDOWN:
