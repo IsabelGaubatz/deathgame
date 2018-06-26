@@ -4,7 +4,6 @@
 # Player sprite and movement
 import pygame
 
-
 WIDTH, HEIGHT = 800, 480
 HW, HH = WIDTH / 2, HEIGHT / 2
 x = 0
@@ -14,6 +13,7 @@ FPS = 60
 pygame.init()
 pygame.mixer.init()
 clock = pygame.time.Clock()
+# TODO: default in Fullscreen
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 # screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
 pygame.display.set_caption("DeathGame")
@@ -51,56 +51,81 @@ stageWidth = bgScaleWidth5 * 2
 startScrollingPosX = HW
 stagePosX = 0
 
+# TODO: Möglichkeit alle Bilder aus einem Ordner zu laden, statt jedes einzelne Bild?
 path = 'JungleAssetPack/Character/sprites/'
-
-
-def load_image(name):
-    image = pygame.image.load(name)
-    return image
 
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
 
-        # image / GIF of the player
-        self.images = []
-        self.images.append(load_image(path + 'idle-png/idle-01.png').convert_alpha())
-        self.images.append(load_image(path + 'idle-png/idle-02.png').convert_alpha())
-        self.images.append(load_image(path + 'idle-png/idle-03.png').convert_alpha())
-        self.images.append(load_image(path + 'idle-png/idle-04.png').convert_alpha())
-        self.images.append(load_image(path + 'idle-png/idle-05.png').convert_alpha())
-        self.images.append(load_image(path + 'idle-png/idle-06.png').convert_alpha())
-        self.images.append(load_image(path + 'idle-png/idle-07.png').convert_alpha())
-        self.images.append(load_image(path + 'idle-png/idle-08.png').convert_alpha())
-        self.images.append(load_image(path + 'idle-png/idle-09.png').convert_alpha())
-        self.images.append(load_image(path + 'idle-png/idle-10.png').convert_alpha())
-        self.images.append(load_image(path + 'idle-png/idle-11.png').convert_alpha())
-        self.images.append(load_image(path + 'idle-png/idle-12.png').convert_alpha())
-        self.firstIndex = 0
-        self.index = 0
-        self.imageRun = pygame.image.load(path + "run.gif").convert_alpha()
-        self.imageflip = pygame.transform.flip(self.imageRun, True, False)
+        # GIF Idle
+        self.idle = []
+        self.idle.append(pygame.image.load(path + 'idle-png/idle-01.png').convert_alpha())
+        self.idle.append(pygame.image.load(path + 'idle-png/idle-02.png').convert_alpha())
+        self.idle.append(pygame.image.load(path + 'idle-png/idle-03.png').convert_alpha())
+        self.idle.append(pygame.image.load(path + 'idle-png/idle-04.png').convert_alpha())
+        self.idle.append(pygame.image.load(path + 'idle-png/idle-05.png').convert_alpha())
+        self.idle.append(pygame.image.load(path + 'idle-png/idle-06.png').convert_alpha())
+        self.idle.append(pygame.image.load(path + 'idle-png/idle-07.png').convert_alpha())
+        self.idle.append(pygame.image.load(path + 'idle-png/idle-08.png').convert_alpha())
+        self.idle.append(pygame.image.load(path + 'idle-png/idle-09.png').convert_alpha())
+        self.idle.append(pygame.image.load(path + 'idle-png/idle-10.png').convert_alpha())
+        self.idle.append(pygame.image.load(path + 'idle-png/idle-11.png').convert_alpha())
+        self.idle.append(pygame.image.load(path + 'idle-png/idle-12.png').convert_alpha())
+
+        # GIF run
+        self.run = []
+        self.run.append(pygame.image.load(path + 'run-png/run_00.png').convert_alpha())
+        self.run.append(pygame.image.load(path + 'run-png/run_01.png').convert_alpha())
+        self.run.append(pygame.image.load(path + 'run-png/run_02.png').convert_alpha())
+        self.run.append(pygame.image.load(path + 'run-png/run_03.png').convert_alpha())
+        self.run.append(pygame.image.load(path + 'run-png/run_04.png').convert_alpha())
+        self.run.append(pygame.image.load(path + 'run-png/run_05.png').convert_alpha())
+        self.run.append(pygame.image.load(path + 'run-png/run_06.png').convert_alpha())
+        self.run.append(pygame.image.load(path + 'run-png/run_07.png').convert_alpha())
+
+        # index values for arrays
+        self.arrayIndex = 0
+        self.idleIndex = 0
+        self.runIndex = 0
+
+        # image flip
+        # self.imageRun = pygame.image.load(path + "run.gif").convert_alpha()
+        # TODO: klappt aus irgendeinen Grund nicht, wenn man self.imageflip an der entsprechenden Stelle insetzt
+        # self.imageflip = pygame.transform.flip(self.run[self.arrayIndex], True, False)
 
         # player
-        self.playerwidth = self.images[self.index].get_width()
-        self.playerheight = self.images[self.index].get_height()
-        # self.playerwidth = self.images[self.index].get_width() * 2
-        # self.playerheight = self.images[self.index].get_height() * 2
+        self.playerwidth = self.idle[self.arrayIndex].get_width()
+        self.playerheight = self.idle[self.arrayIndex].get_height()
         self.playerposx = self.playerwidth
         self.HPH = int(round(self.playerheight / 2))  # float to int
-        # nachfolgende zeile nachher raus nehmen
-        self.normalHeight = pygame.transform.scale(self.images[self.index], (self.playerwidth, self.playerheight))
-        self.newHeight = pygame.transform.scale(self.images[self.index], (self.playerwidth, self.HPH))
+        self.newHeight = pygame.transform.scale(self.idle[self.arrayIndex], (self.playerwidth, self.HPH))
 
-        # rect
-        self.rect = self.images[self.index].get_rect()
+        # rectangle
+        self.rect = self.idle[self.arrayIndex].get_rect()
         self.rect.centerx = WIDTH / 2
         self.rect.bottom = HEIGHT - 50
         self.speedx = 0
         self.speedy = 0
-        # self.stageposx = 0
+        # self.stageposx = 0  # wird nicht gebraucht
         self.x = 0
+
+    # Funktion aufrufen und Werte eintragen:
+    # 1. Welches GIF?
+    # 2. (Neue Variable erstellen für einen individuellen Array Index) TODO: ???
+    # 2. Welche Geschw.?
+    '''
+    def playGif(self, gifArray, gifSpeed):
+        player.idleIndex += 1
+        if player.idleIndex == gifSpeed:  # normale Geschw. = 1, halbe Geschw. = 2, doppelte Geschw. = 0.5
+            player.arrayIndex += 1
+            player.idleIndex = 0
+            if player.arrayIndex >= len(gifArray):
+                player.arrayIndex = 0
+        player.image = gifArray[player.arrayIndex]
+        return player.image
+    '''
 
     def update(self):
         self.speedx = 0
@@ -113,25 +138,42 @@ class Player(pygame.sprite.Sprite):
         pygame.mouse.set_visible(True)
         if keystate[pygame.K_LEFT] or mousepos < (HW, HEIGHT) and mousepress == (1, 0, 0):
             self.speedx = -8
-            self.image = self.imageflip
+            # self.playGif(self.run, 2)
+            self.idleIndex += 1
+            if self.idleIndex == 2:  # Verlangsamen des GIFs, normale Geschw. = 1
+                self.arrayIndex += 1
+                self.idleIndex = 0
+            if self.arrayIndex >= len(self.run):
+                self.arrayIndex = 0
+            # self.image = self.imageflip
+            self.image = pygame.transform.flip(self.run[self.arrayIndex], True, False)
+
         elif keystate[pygame.K_RIGHT] or mousepos > (HW, HEIGHT) and mousepress == (1, 0, 0):
             self.speedx = 8
-            self.image = pygame.image.load(path + "run.gif").convert_alpha()
+            # self.playGif(self.run, 3)
+            self.runIndex += 1
+            if self.runIndex == 3:  # Verlangsamen des GIFs, normale Geschw. = 1
+                self.arrayIndex += 1  # TODO: arrayIndex braucht mehrere Variablen, nicht runIndex.. ??
+                self.runIndex = 0
+            if self.arrayIndex >= len(self.run):
+                self.arrayIndex = 0
+            self.image = self.run[self.arrayIndex]
+
         elif keystate[pygame.K_DOWN]:
             # self.image = pygame.image.load(path + "landing.png").convert_alpha()
             self.image = self.newHeight
             self.rect.bottom = HEIGHT - 50 + 19
         else:
-            self.firstIndex += 1
-            if self.firstIndex == 3:  # Verlangsamen des GIFs, normale Geschw. = 1
-                self.index += 1
-                self.firstIndex = 0
-            if self.index >= len(self.images):
-                self.index = 0
-            self.image = self.images[self.index]
+            # self.playGif(self.idle, 2)
+            self.idleIndex += 1
+            if self.idleIndex == 2:  # Verlangsamen des GIFs, normale Geschw. = 1
+                self.arrayIndex += 1
+                self.idleIndex = 0
+            if self.arrayIndex >= len(self.idle):
+                self.arrayIndex = 0
+            self.image = self.idle[self.arrayIndex]
+
             self.rect.bottom = HEIGHT - 50
-            # nachher folgende zeile wieder raus nehmen, vergrößert Player, GIF funktioniert dann nicht mehr
-            # self.image = self.normalHeight
 
         # Key pressed: only one move
         if event.type == pygame.KEYDOWN:
@@ -196,7 +238,7 @@ while running:
     rel_ground = stagePosX % ground_size.get_rect().width
     screen.blit(ground_size, (rel_ground - ground_size.get_rect().width, 420))
     if rel_ground < WIDTH:
-            screen.blit(ground_size, (rel_ground, 420))
+        screen.blit(ground_size, (rel_ground, 420))
 
     Player()
 
