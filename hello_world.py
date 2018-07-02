@@ -3,6 +3,7 @@
 # Video link: https://www.youtube.com/watch?v=nGufy7weyGY
 # Player sprite and movement
 import pygame
+import os
 
 WIDTH, HEIGHT = 800, 480
 HW, HH = WIDTH / 2, HEIGHT / 2
@@ -56,11 +57,24 @@ path = 'JungleAssetPack/Character/sprites/'
 
 
 class Player(pygame.sprite.Sprite):
+
+    """
+    def loadImages(self, path_to_directory):
+        image_dict = {}  # dictionary
+        for filename in os.listdir(path_to_directory):
+            if filename.endswith('.png'):
+                pathdir = os.path.join(path_to_directory, filename)
+                key = filename[:-4]
+                image_dict[key] = pygame.image.load(pathdir).convert_alpha()
+        return image_dict
+    """
+
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
 
         # GIF Idle
         self.idle = []
+        # self.idle.append(self.loadImages('JungleAssetPack/Character/sprites/idle-png/'))
         self.idle.append(pygame.image.load(path + 'idle-png/idle-01.png').convert_alpha())
         self.idle.append(pygame.image.load(path + 'idle-png/idle-02.png').convert_alpha())
         self.idle.append(pygame.image.load(path + 'idle-png/idle-03.png').convert_alpha())
@@ -95,7 +109,7 @@ class Player(pygame.sprite.Sprite):
         # TODO: klappt aus irgendeinen Grund nicht, wenn man self.imageflip an der entsprechenden Stelle insetzt
         # self.imageflip = pygame.transform.flip(self.run[self.arrayIndex], True, False)
 
-        # player
+        # player  # TODO: self.idle muss auch self.run sein...
         self.playerwidth = self.idle[self.arrayIndex].get_width()
         self.playerheight = self.idle[self.arrayIndex].get_height()
         self.playerposx = self.playerwidth
@@ -113,19 +127,18 @@ class Player(pygame.sprite.Sprite):
 
     # Funktion aufrufen und Werte eintragen:
     # 1. Welches GIF?
-    # 2. (Neue Variable erstellen für einen individuellen Array Index) TODO: ???
     # 2. Welche Geschw.?
-    '''
-    def playGif(self, gifArray, gifSpeed):
+    # 3. GIF spiegeln? --> (nur für das nach links Laufen)
+
+    def playGif(self, gifArray, gifSpeed, imageFlip):
         player.idleIndex += 1
-        if player.idleIndex == gifSpeed:  # normale Geschw. = 1, halbe Geschw. = 2, doppelte Geschw. = 0.5
+        if player.idleIndex >= gifSpeed:  # normale Geschw. = 1, halbe Geschw. = 2, doppelte Geschw. = 0.5
             player.arrayIndex += 1
             player.idleIndex = 0
-            if player.arrayIndex >= len(gifArray):
-                player.arrayIndex = 0
-        player.image = gifArray[player.arrayIndex]
+        if player.arrayIndex >= len(gifArray):
+            player.arrayIndex = 0
+        player.image = pygame.transform.flip(gifArray[player.arrayIndex], imageFlip, False)
         return player.image
-    '''
 
     def update(self):
         self.speedx = 0
@@ -135,44 +148,20 @@ class Player(pygame.sprite.Sprite):
         keystate = pygame.key.get_pressed()
         mousepos = pygame.mouse.get_pos()
         mousepress = pygame.mouse.get_pressed()
+        # TODO: set mouse visible back to False
         pygame.mouse.set_visible(True)
         if keystate[pygame.K_LEFT] or mousepos < (HW, HEIGHT) and mousepress == (1, 0, 0):
             self.speedx = -8
-            # self.playGif(self.run, 2)
-            self.idleIndex += 1
-            if self.idleIndex == 2:  # Verlangsamen des GIFs, normale Geschw. = 1
-                self.arrayIndex += 1
-                self.idleIndex = 0
-            if self.arrayIndex >= len(self.run):
-                self.arrayIndex = 0
-            # self.image = self.imageflip
-            self.image = pygame.transform.flip(self.run[self.arrayIndex], True, False)
-
+            self.playGif(self.run, 3, True)
         elif keystate[pygame.K_RIGHT] or mousepos > (HW, HEIGHT) and mousepress == (1, 0, 0):
             self.speedx = 8
-            # self.playGif(self.run, 3)
-            self.runIndex += 1
-            if self.runIndex == 3:  # Verlangsamen des GIFs, normale Geschw. = 1
-                self.arrayIndex += 1  # TODO: arrayIndex braucht mehrere Variablen, nicht runIndex.. ??
-                self.runIndex = 0
-            if self.arrayIndex >= len(self.run):
-                self.arrayIndex = 0
-            self.image = self.run[self.arrayIndex]
-
+            self.playGif(self.run, 3, False)
         elif keystate[pygame.K_DOWN]:
             # self.image = pygame.image.load(path + "landing.png").convert_alpha()
             self.image = self.newHeight
             self.rect.bottom = HEIGHT - 50 + 19
         else:
-            # self.playGif(self.idle, 2)
-            self.idleIndex += 1
-            if self.idleIndex == 2:  # Verlangsamen des GIFs, normale Geschw. = 1
-                self.arrayIndex += 1
-                self.idleIndex = 0
-            if self.arrayIndex >= len(self.idle):
-                self.arrayIndex = 0
-            self.image = self.idle[self.arrayIndex]
-
+            self.playGif(self.idle, 2, False)
             self.rect.bottom = HEIGHT - 50
 
         # Key pressed: only one move
