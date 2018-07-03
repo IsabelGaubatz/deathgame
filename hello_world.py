@@ -3,7 +3,8 @@
 # Video link: https://www.youtube.com/watch?v=nGufy7weyGY
 # Player sprite and movement
 import pygame
-import os
+import os  # to use path directory
+import numpy as np  # to use numpy.asarray to convert a list to an array
 
 WIDTH, HEIGHT = 800, 480
 HW, HH = WIDTH / 2, HEIGHT / 2
@@ -52,21 +53,24 @@ stageWidth = bgScaleWidth5 * 2
 startScrollingPosX = HW
 stagePosX = 0
 
-# TODO: Möglichkeit alle Bilder aus einem Ordner zu laden, statt jedes einzelne Bild?
 path = 'JungleAssetPack/Character/sprites/'
 
 
 class Player(pygame.sprite.Sprite):
 
+    # TODO: alle Bilder aus einem Ordner laden
     """
-    def loadImages(self, path_to_directory):
-        image_dict = {}  # dictionary
+    def load_images(self, path_to_directory):
+        image_dict = {}
+        self.myArray = []
         for filename in os.listdir(path_to_directory):
             if filename.endswith('.png'):
                 pathdir = os.path.join(path_to_directory, filename)
                 key = filename[:-4]
-                image_dict[key] = pygame.image.load(pathdir).convert_alpha()
-        return image_dict
+                image_dict[key] = pygame.image.load(pathdir).convert()
+                self.myArray = np.asarray(image_dict)
+        print(self.myArray)
+        return self.myArray
     """
 
     def __init__(self):
@@ -74,7 +78,7 @@ class Player(pygame.sprite.Sprite):
 
         # GIF Idle
         self.idle = []
-        # self.idle.append(self.loadImages('JungleAssetPack/Character/sprites/idle-png/'))
+        # self.idle = self.load_images('JungleAssetPack/Character/sprites/idle-png/')
         self.idle.append(pygame.image.load(path + 'idle-png/idle-01.png').convert_alpha())
         self.idle.append(pygame.image.load(path + 'idle-png/idle-02.png').convert_alpha())
         self.idle.append(pygame.image.load(path + 'idle-png/idle-03.png').convert_alpha())
@@ -104,12 +108,7 @@ class Player(pygame.sprite.Sprite):
         self.idleIndex = 0
         self.runIndex = 0
 
-        # image flip
-        # self.imageRun = pygame.image.load(path + "run.gif").convert_alpha()
-        # TODO: klappt aus irgendeinen Grund nicht, wenn man self.imageflip an der entsprechenden Stelle insetzt
-        # self.imageflip = pygame.transform.flip(self.run[self.arrayIndex], True, False)
-
-        # player  # TODO: self.idle muss auch self.run sein...
+        # player  # TODO: get_width() von allen Arrays nehmen
         self.playerwidth = self.idle[self.arrayIndex].get_width()
         self.playerheight = self.idle[self.arrayIndex].get_height()
         self.playerposx = self.playerwidth
@@ -129,7 +128,6 @@ class Player(pygame.sprite.Sprite):
     # 1. Welches GIF?
     # 2. Welche Geschw.?
     # 3. GIF spiegeln? --> (nur für das nach links Laufen)
-
     def playGif(self, gifArray, gifSpeed, imageFlip):
         player.idleIndex += 1
         if player.idleIndex >= gifSpeed:  # normale Geschw. = 1, halbe Geschw. = 2, doppelte Geschw. = 0.5
@@ -148,7 +146,7 @@ class Player(pygame.sprite.Sprite):
         keystate = pygame.key.get_pressed()
         mousepos = pygame.mouse.get_pos()
         mousepress = pygame.mouse.get_pressed()
-        # TODO: set mouse visible back to False
+        # TODO: default mouse visible False
         pygame.mouse.set_visible(True)
         if keystate[pygame.K_LEFT] or mousepos < (HW, HEIGHT) and mousepress == (1, 0, 0):
             self.speedx = -8
