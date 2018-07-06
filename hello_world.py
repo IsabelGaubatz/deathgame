@@ -145,22 +145,38 @@ class Player(pygame.sprite.Sprite):
         player.image = pygame.transform.flip(gifArray[player.arrayIndex], imageFlip, False)
         return player.image
 
-    def update(self):
-        self.speedx = 0
-        self.speedy = 0
+    '''
+    def runLeft(self):
+        player.speedx = -8
+        player.playGif(player.run, 3, True)
 
+    def runRight(self):
+        player.speedx = 8
+        player.playGif(player.run, 3, False)
+    '''
+
+    def runDir(self, direction, imageFlip):  # 8 = right, -8 = left
+        player.speedx = direction
+        player.playGif(player.run, 3, imageFlip)
+
+    def update(self):
         # Key pressed: constant movement
         keystate = pygame.key.get_pressed()
         mousepos = pygame.mouse.get_pos()
         mousepress = pygame.mouse.get_pressed()
+
+        self.speedx = 0
+        self.speedy = 0
+
+        self.key_left = keystate[pygame.K_LEFT] or mousepos < (HW, HEIGHT) and mousepress == (1, 0, 0)
+        self.key_right = keystate[pygame.K_RIGHT] or mousepos > (HW, HEIGHT) and mousepress == (1, 0, 0)
+
         # TODO: default mouse visible False
         pygame.mouse.set_visible(True)
-        if keystate[pygame.K_LEFT] or mousepos < (HW, HEIGHT) and mousepress == (1, 0, 0):
-            self.speedx = -8
-            self.playGif(self.run, 3, True)
-        elif keystate[pygame.K_RIGHT] or mousepos > (HW, HEIGHT) and mousepress == (1, 0, 0):
-            self.speedx = 8
-            self.playGif(self.run, 3, False)
+        if self.key_left:
+            self.runDir(-8, True)
+        elif self.key_right:
+            self.runDir(8, False)
         elif keystate[pygame.K_DOWN]:
             # self.image = pygame.image.load(pathPlayer + "landing.png").convert_alpha()
             self.image = self.newHeight
@@ -203,13 +219,11 @@ class Mob(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
 
         # enemy
-        # self.image = pygame.Surface((30,40))
         self.image = obstacle
-        # self.image.fill(250, 70, 70)
         self.rect = self.image.get_rect()
-        self.rect.x = WIDTH - 200
-        obstacle_ypos = HEIGHT - ground_size.get_rect().height - obstacle_size.get_rect().height - 5
-        self.rect.y = obstacle_ypos
+        self.rect.x = WIDTH - 300
+        self.obstacle_ypos = HEIGHT - ground_size.get_rect().height - obstacle_size.get_rect().height - 5
+        self.rect.y = self.obstacle_ypos
 
 
 # sprite groups
@@ -253,15 +267,14 @@ while running:
         screen.blit(bg5_size, (rel_x, 0))
 
     rel_ground = stagePosX % ground_size.get_rect().width
+    # print(rel_ground)
     screen.blit(ground_size, (rel_ground - ground_size.get_rect().width, 420))
     if rel_ground < WIDTH:
         screen.blit(ground_size, (rel_ground, 420))
 
     # rel_obstacle = stagePosX % ground_size.get_rect().width
     # obstacle_ypos = HEIGHT - ground_size.get_rect().height - obstacle_size.get_rect().height + 15
-    # screen.blit(obstacle_size, (rel_ground, obstacle_ypos))
-
-    # Player() TODO: warum wird die Klasse hier aufgerufen??
+    # screen.blit(obstacle_size, (rel_obstacle, mob.obstacle_ypos))
 
     # keep loop running at the right speed
     clock.tick(FPS)
@@ -275,9 +288,26 @@ while running:
     all_sprites.update()
 
     # check to see if mob hit the player
-    hits = pygame.sprite.spritecollide(player, mobs, False)
-    if hits:
-        print('Ouch, you hit the wall')
+    # hits = pygame.sprite.spritecollide(player, mobs, False)
+
+    # player.key_left
+    # player.key_right
+
+    hits = pygame.sprite.collide_rect(player, mob)
+    if player.key_right:
+        if hits and mob.rect.x >= player.rect.x:
+            player.runDir(0, False)
+            print('erste if')
+        else:
+            player.runDir(8, False)
+            print('erste else')
+    elif player.key_left:
+        if hits  and mob.rect.x <= player.rect.x:
+            player.runDir(0, False)
+            print('zweite if')
+        else:
+            player.runDir(-8, False)
+            print('zweite else')
 
     # Draw / render
     all_sprites.draw(screen)
