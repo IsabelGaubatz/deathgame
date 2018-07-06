@@ -3,8 +3,8 @@
 # Video link: https://www.youtube.com/watch?v=nGufy7weyGY
 # Player sprite and movement
 import pygame
-#import os  # to use path directory
-#import numpy as np  # to use numpy.asarray to convert a list to an array
+# import os  # to use path directory
+# import numpy as np  # to use numpy.asarray to convert a list to an array
 
 WIDTH, HEIGHT = 800, 480
 HW, HH = WIDTH / 2, HEIGHT / 2
@@ -176,10 +176,10 @@ class Player(pygame.sprite.Sprite):
         # TODO: default mouse visible False
         pygame.mouse.set_visible(True)
         if self.key_left:
-            self.runDir(-8, True)
+            self.runDir(0, True)
         elif self.key_right:
-            self.runDir(8, False)
-        elif keystate[pygame.K_DOWN]:
+            self.runDir(0, False)
+        if keystate[pygame.K_DOWN]:
             # self.image = pygame.image.load(pathPlayer + "landing.png").convert_alpha()
             self.image = self.newHeight
             self.rect.bottom = HEIGHT - 50 + 19
@@ -253,8 +253,6 @@ while running:
         newPlayerPosX = startScrollingPosX
 
     stagePosX += -player.speedx
-    print(stagePosX)
-
 
     rel_x = stagePosX % bgScaleWidth5
     screen.blit(bg1_size, (rel_x - bgScaleWidth1, 0))
@@ -271,15 +269,12 @@ while running:
         screen.blit(bg5_size, (rel_x, 0))
 
     rel_ground = stagePosX % ground_size.get_rect().width
-    # print(rel_ground)
     screen.blit(ground_size, (rel_ground - ground_size.get_rect().width, 420))
     if rel_ground < WIDTH:
         screen.blit(ground_size, (rel_ground, 420))
 
     rel_obstacle = stagePosX % ground_size.get_rect().width
     screen.blit(obstacle_size, (mob.rect.x + stagePosX, mob.rect.y))
-
-    # Player() TODO: warum wird die Klasse hier aufgerufen??
 
     # keep loop running at the right speed
     clock.tick(FPS)
@@ -295,24 +290,27 @@ while running:
     # check to see if mob hit the player
     # hits = pygame.sprite.spritecollide(player, mobs, False)
 
-    # player.key_left
-    # player.key_right
-
     hits = pygame.sprite.collide_rect(player, mob)
+    mob_pos = mob.rect.x + stagePosX
+    playerpos = stagePosX * -1
+    value = 0
+
     if player.key_right:
-        if hits and mob.rect.x >= player.rect.x:
-            player.runDir(0, False)
-            print('erste if')
-        else:
+        if playerpos <= mob_pos:
             player.runDir(8, False)
-            print('erste else')
-    elif player.key_left:
-        if hits  and mob.rect.x <= player.rect.x:
-            player.runDir(0, False)
-            print('zweite if')
+            print('erste if')
+        elif player.key_left and playerpos >= mob_pos - 20:
+            player.runDir(-8, True)
         else:
-            player.runDir(-8, False)
-            print('zweite else')
+            player.runDir(0, False)
+            print('erste else')
+    if player.key_left:
+        if playerpos <= mob_pos + 20:
+            player.runDir(-8, True)
+        elif player.key_right and playerpos >= mob_pos + 20:
+            player.runDir(8, False)
+        else:
+            player.runDir(0, False)
 
     # Draw / render
     all_sprites.draw(screen)
