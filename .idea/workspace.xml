@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0ad52f12-0222-4b83-95fc-06a19cf5a477" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/deathgame.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deathgame.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hello_world.py" beforeDir="false" afterPath="$PROJECT_DIR$/hello_world.py" afterDir="false" />
     </list>
@@ -19,8 +17,8 @@
       <file leaf-file-name="hello_world.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/hello_world.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="76">
-              <caret line="272" column="54" selection-start-line="272" selection-start-column="54" selection-end-line="272" selection-end-column="54" />
+            <state relative-caret-position="1330">
+              <caret line="211" column="27" selection-start-line="211" selection-start-column="27" selection-end-line="211" selection-end-column="27" />
             </state>
           </provider>
         </entry>
@@ -159,8 +157,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="595" y="23" width="1041" height="717" extended-state="0" />
-    <editor active="true" />
+    <frame x="131" y="23" width="1041" height="717" extended-state="0" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.25" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -559,8 +556,8 @@
     <entry file="file://$PROJECT_DIR$/GIFImage.py" />
     <entry file="file://$PROJECT_DIR$/hello_world.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="76">
-          <caret line="272" column="54" selection-start-line="272" selection-start-column="54" selection-end-line="272" selection-end-column="54" />
+        <state relative-caret-position="1330">
+          <caret line="211" column="27" selection-start-line="211" selection-start-column="27" selection-end-line="211" selection-end-column="27" />
         </state>
       </provider>
     </entry>

@@ -209,8 +209,8 @@ class Mob(pygame.sprite.Sprite):
         self.image = obstacle
         # self.image.fill(250, 70, 70)
         self.rect = self.image.get_rect()
-        self.rect.x = WIDTH - 200
-        self.obstacle_ypos = HEIGHT - ground_size.get_rect().height - obstacle_size.get_rect().height - 5
+        self.rect.x = WIDTH
+        self.obstacle_ypos = HEIGHT - ground_size.get_rect().height - obstacle_size.get_rect().height + 15
         self.rect.y = self.obstacle_ypos
 
 
@@ -224,7 +224,7 @@ mob = Mob()
 
 # add the sprites to groups
 mobs.add(mob)
-all_sprites.add(mob)
+#all_sprites.add(mob)
 all_sprites.add(player)
 
 # Game loop
