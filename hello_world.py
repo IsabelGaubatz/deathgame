@@ -11,6 +11,11 @@ HW, HH = WIDTH / 2, HEIGHT / 2
 x = 0
 FPS = 60
 
+# path directories
+pathBackground = 'JungleAssetPack/parallaxBackground/'
+pathTileset = 'JungleAssetPack/jungletileset/'
+pathPlayer = 'JungleAssetPack/Character/sprites/'
+
 # initialize pygame and create window
 pygame.init()
 pygame.mixer.init()
@@ -20,31 +25,35 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 # screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
 pygame.display.set_caption("DeathGame")
 
-ground = pygame.image.load("JungleAssetPack/jungletileset/Jungle_Ground.png").convert_alpha()
+# World and Background
+ground = pygame.image.load(pathTileset + "Jungle_Ground.png").convert_alpha()
 ground_size = pygame.transform.scale(ground, (800, 60))
 
+obstacle = pygame.image.load(pathTileset + "tileset-01.png").convert_alpha()
+obstacle_size = pygame.transform.scale(obstacle, (60, 60))
+
 # bg 1
-bg1 = pygame.image.load("JungleAssetPack/parallaxBackground/plx-1.png").convert_alpha()
+bg1 = pygame.image.load(pathBackground + "plx-1.png").convert_alpha()
 bg1_size = pygame.transform.scale(bg1, (800, 480))
 bgScaleWidth1 = bg1_size.get_rect().width
 
 # bg 2
-bg2 = pygame.image.load("JungleAssetPack/parallaxBackground/plx-2.png").convert_alpha()
+bg2 = pygame.image.load(pathBackground + "plx-2.png").convert_alpha()
 bg2_size = pygame.transform.scale(bg2, (800, 480))
 bgScaleWidth2 = bg2_size.get_rect().width
 
 # bg 3
-bg3 = pygame.image.load("JungleAssetPack/parallaxBackground/plx-3.png").convert_alpha()
+bg3 = pygame.image.load(pathBackground + "plx-3.png").convert_alpha()
 bg3_size = pygame.transform.scale(bg3, (800, 480))
 bgScaleWidth3 = bg3_size.get_rect().width
 
 # bg 4
-bg4 = pygame.image.load("JungleAssetPack/parallaxBackground/plx-4.png").convert_alpha()
+bg4 = pygame.image.load(pathBackground + "plx-4.png").convert_alpha()
 bg4_size = pygame.transform.scale(bg4, (800, 480))
 bgScaleWidth4 = bg4_size.get_rect().width
 
 # bg 5
-bg5 = pygame.image.load("JungleAssetPack/parallaxBackground/plx-5.png").convert_alpha()
+bg5 = pygame.image.load(pathBackground + "plx-5.png").convert_alpha()
 bg5_size = pygame.transform.scale(bg5, (800, 480))
 bgScaleWidth5 = bg5_size.get_rect().width
 
@@ -52,8 +61,6 @@ bgScaleWidth5 = bg5_size.get_rect().width
 stageWidth = bgScaleWidth5 * 2
 startScrollingPosX = HW
 stagePosX = 0
-
-path = 'JungleAssetPack/Character/sprites/'
 
 
 class Player(pygame.sprite.Sprite):
@@ -79,29 +86,29 @@ class Player(pygame.sprite.Sprite):
         # GIF Idle
         self.idle = []
         # self.idle = self.load_images('JungleAssetPack/Character/sprites/idle-png/')
-        self.idle.append(pygame.image.load(path + 'idle-png/idle-01.png').convert_alpha())
-        self.idle.append(pygame.image.load(path + 'idle-png/idle-02.png').convert_alpha())
-        self.idle.append(pygame.image.load(path + 'idle-png/idle-03.png').convert_alpha())
-        self.idle.append(pygame.image.load(path + 'idle-png/idle-04.png').convert_alpha())
-        self.idle.append(pygame.image.load(path + 'idle-png/idle-05.png').convert_alpha())
-        self.idle.append(pygame.image.load(path + 'idle-png/idle-06.png').convert_alpha())
-        self.idle.append(pygame.image.load(path + 'idle-png/idle-07.png').convert_alpha())
-        self.idle.append(pygame.image.load(path + 'idle-png/idle-08.png').convert_alpha())
-        self.idle.append(pygame.image.load(path + 'idle-png/idle-09.png').convert_alpha())
-        self.idle.append(pygame.image.load(path + 'idle-png/idle-10.png').convert_alpha())
-        self.idle.append(pygame.image.load(path + 'idle-png/idle-11.png').convert_alpha())
-        self.idle.append(pygame.image.load(path + 'idle-png/idle-12.png').convert_alpha())
+        self.idle.append(pygame.image.load(pathPlayer + 'idle-png/idle-01.png').convert_alpha())
+        self.idle.append(pygame.image.load(pathPlayer + 'idle-png/idle-02.png').convert_alpha())
+        self.idle.append(pygame.image.load(pathPlayer + 'idle-png/idle-03.png').convert_alpha())
+        self.idle.append(pygame.image.load(pathPlayer + 'idle-png/idle-04.png').convert_alpha())
+        self.idle.append(pygame.image.load(pathPlayer + 'idle-png/idle-05.png').convert_alpha())
+        self.idle.append(pygame.image.load(pathPlayer + 'idle-png/idle-06.png').convert_alpha())
+        self.idle.append(pygame.image.load(pathPlayer + 'idle-png/idle-07.png').convert_alpha())
+        self.idle.append(pygame.image.load(pathPlayer + 'idle-png/idle-08.png').convert_alpha())
+        self.idle.append(pygame.image.load(pathPlayer + 'idle-png/idle-09.png').convert_alpha())
+        self.idle.append(pygame.image.load(pathPlayer + 'idle-png/idle-10.png').convert_alpha())
+        self.idle.append(pygame.image.load(pathPlayer + 'idle-png/idle-11.png').convert_alpha())
+        self.idle.append(pygame.image.load(pathPlayer + 'idle-png/idle-12.png').convert_alpha())
 
         # GIF run
         self.run = []
-        self.run.append(pygame.image.load(path + 'run-png/run_00.png').convert_alpha())
-        self.run.append(pygame.image.load(path + 'run-png/run_01.png').convert_alpha())
-        self.run.append(pygame.image.load(path + 'run-png/run_02.png').convert_alpha())
-        self.run.append(pygame.image.load(path + 'run-png/run_03.png').convert_alpha())
-        self.run.append(pygame.image.load(path + 'run-png/run_04.png').convert_alpha())
-        self.run.append(pygame.image.load(path + 'run-png/run_05.png').convert_alpha())
-        self.run.append(pygame.image.load(path + 'run-png/run_06.png').convert_alpha())
-        self.run.append(pygame.image.load(path + 'run-png/run_07.png').convert_alpha())
+        self.run.append(pygame.image.load(pathPlayer + 'run-png/run_00.png').convert_alpha())
+        self.run.append(pygame.image.load(pathPlayer + 'run-png/run_01.png').convert_alpha())
+        self.run.append(pygame.image.load(pathPlayer + 'run-png/run_02.png').convert_alpha())
+        self.run.append(pygame.image.load(pathPlayer + 'run-png/run_03.png').convert_alpha())
+        self.run.append(pygame.image.load(pathPlayer + 'run-png/run_04.png').convert_alpha())
+        self.run.append(pygame.image.load(pathPlayer + 'run-png/run_05.png').convert_alpha())
+        self.run.append(pygame.image.load(pathPlayer + 'run-png/run_06.png').convert_alpha())
+        self.run.append(pygame.image.load(pathPlayer + 'run-png/run_07.png').convert_alpha())
 
         # index values for arrays
         self.arrayIndex = 0
@@ -155,7 +162,7 @@ class Player(pygame.sprite.Sprite):
             self.speedx = 8
             self.playGif(self.run, 3, False)
         elif keystate[pygame.K_DOWN]:
-            # self.image = pygame.image.load(path + "landing.png").convert_alpha()
+            # self.image = pygame.image.load(pathPlayer + "landing.png").convert_alpha()
             self.image = self.newHeight
             self.rect.bottom = HEIGHT - 50 + 19
         else:
@@ -166,7 +173,7 @@ class Player(pygame.sprite.Sprite):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
                 self.rect.bottom = HEIGHT - 100
-                self.image = pygame.image.load(path + "jump.png").convert_alpha()
+                self.image = pygame.image.load(pathPlayer + "jump.png").convert_alpha()
             elif event.key == pygame.K_f or event.key == pygame.K_ESCAPE:
                 if screen.get_flags() & pygame.FULLSCREEN:
                     pygame.display.set_mode((WIDTH, HEIGHT))
@@ -191,8 +198,31 @@ class Player(pygame.sprite.Sprite):
             self.rect.top = 0
 
 
+class Mob(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+
+        # enemy
+        # self.image = pygame.Surface((30,40))
+        self.image = obstacle
+        # self.image.fill(250, 70, 70)
+        self.rect = self.image.get_rect()
+        self.rect.x = WIDTH - 200
+        obstacle_ypos = HEIGHT - ground_size.get_rect().height - obstacle_size.get_rect().height - 5
+        self.rect.y = obstacle_ypos
+
+
+# sprite groups
 all_sprites = pygame.sprite.Group()
+mobs = pygame.sprite.Group()
+
+# classes
 player = Player()
+mob = Mob()
+
+# add the sprites to groups
+mobs.add(mob)
+all_sprites.add(mob)
 all_sprites.add(player)
 
 # Game loop
@@ -227,7 +257,11 @@ while running:
     if rel_ground < WIDTH:
         screen.blit(ground_size, (rel_ground, 420))
 
-    Player()
+    # rel_obstacle = stagePosX % ground_size.get_rect().width
+    # obstacle_ypos = HEIGHT - ground_size.get_rect().height - obstacle_size.get_rect().height + 15
+    # screen.blit(obstacle_size, (rel_ground, obstacle_ypos))
+
+    # Player() TODO: warum wird die Klasse hier aufgerufen??
 
     # keep loop running at the right speed
     clock.tick(FPS)
@@ -239,6 +273,11 @@ while running:
 
     # Update
     all_sprites.update()
+
+    # check to see if mob hit the player
+    hits = pygame.sprite.spritecollide(player, mobs, False)
+    if hits:
+        print('Ouch, you hit the wall')
 
     # Draw / render
     all_sprites.draw(screen)
