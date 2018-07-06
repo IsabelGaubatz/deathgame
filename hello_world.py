@@ -3,8 +3,8 @@
 # Video link: https://www.youtube.com/watch?v=nGufy7weyGY
 # Player sprite and movement
 import pygame
-import os  # to use path directory
-import numpy as np  # to use numpy.asarray to convert a list to an array
+#import os  # to use path directory
+#import numpy as np  # to use numpy.asarray to convert a list to an array
 
 WIDTH, HEIGHT = 800, 480
 HW, HH = WIDTH / 2, HEIGHT / 2
@@ -61,6 +61,8 @@ bgScaleWidth5 = bg5_size.get_rect().width
 stageWidth = bgScaleWidth5 * 2
 startScrollingPosX = HW
 stagePosX = 0
+mobPosX = 0
+count = 0
 
 
 class Player(pygame.sprite.Sprite):
@@ -221,8 +223,8 @@ class Mob(pygame.sprite.Sprite):
         # enemy
         self.image = obstacle
         self.rect = self.image.get_rect()
-        self.rect.x = WIDTH - 300
-        self.obstacle_ypos = HEIGHT - ground_size.get_rect().height - obstacle_size.get_rect().height - 5
+        self.rect.x = WIDTH
+        self.obstacle_ypos = HEIGHT - ground_size.get_rect().height - obstacle_size.get_rect().height + 15
         self.rect.y = self.obstacle_ypos
 
 
@@ -236,7 +238,7 @@ mob = Mob()
 
 # add the sprites to groups
 mobs.add(mob)
-all_sprites.add(mob)
+#all_sprites.add(mob)
 all_sprites.add(player)
 
 # Game loop
@@ -251,6 +253,8 @@ while running:
         newPlayerPosX = startScrollingPosX
 
     stagePosX += -player.speedx
+    print(stagePosX)
+
 
     rel_x = stagePosX % bgScaleWidth5
     screen.blit(bg1_size, (rel_x - bgScaleWidth1, 0))
@@ -272,9 +276,10 @@ while running:
     if rel_ground < WIDTH:
         screen.blit(ground_size, (rel_ground, 420))
 
-    # rel_obstacle = stagePosX % ground_size.get_rect().width
-    # obstacle_ypos = HEIGHT - ground_size.get_rect().height - obstacle_size.get_rect().height + 15
-    # screen.blit(obstacle_size, (rel_obstacle, mob.obstacle_ypos))
+    rel_obstacle = stagePosX % ground_size.get_rect().width
+    screen.blit(obstacle_size, (mob.rect.x + stagePosX, mob.rect.y))
+
+    # Player() TODO: warum wird die Klasse hier aufgerufen??
 
     # keep loop running at the right speed
     clock.tick(FPS)
