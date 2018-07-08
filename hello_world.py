@@ -78,7 +78,6 @@ class Player(pygame.sprite.Sprite):
                 key = filename[:-4]
                 image_dict[key] = pygame.image.load(pathdir).convert()
                 self.myArray = np.asarray(image_dict)
-        print(self.myArray)
         return self.myArray
     """
 
@@ -87,7 +86,6 @@ class Player(pygame.sprite.Sprite):
 
         # GIF Idle
         self.idle = []
-        # self.idle = self.load_images('JungleAssetPack/Character/sprites/idle-png/')
         self.idle.append(pygame.image.load(pathPlayer + 'idle-png/idle-01.png').convert_alpha())
         self.idle.append(pygame.image.load(pathPlayer + 'idle-png/idle-02.png').convert_alpha())
         self.idle.append(pygame.image.load(pathPlayer + 'idle-png/idle-03.png').convert_alpha())
@@ -120,7 +118,6 @@ class Player(pygame.sprite.Sprite):
         # player  # TODO: get_width() von allen Arrays nehmen
         self.playerwidth = self.idle[self.arrayIndex].get_width()
         self.playerheight = self.idle[self.arrayIndex].get_height()
-        self.playerposx = self.playerwidth
         self.HPH = int(round(self.playerheight / 2))  # float to int
         self.newHeight = pygame.transform.scale(self.idle[self.arrayIndex], (self.playerwidth, self.HPH))
 
@@ -130,67 +127,54 @@ class Player(pygame.sprite.Sprite):
         self.rect.bottom = HEIGHT - 50
         self.speedx = 0
         self.speedy = 0
-        # self.stageposx = 0  # wird nicht gebraucht
         self.x = 0
+        self.playerposy = HEIGHT - 50
 
-    # Funktion aufrufen und Werte eintragen:
-    # 1. Welches GIF?
-    # 2. Welche Geschw.?
-    # 3. GIF spiegeln? --> (nur für das nach links Laufen)
     def playGif(self, gifArray, gifSpeed, imageFlip):
-        player.idleIndex += 1
-        if player.idleIndex >= gifSpeed:  # normale Geschw. = 1, halbe Geschw. = 2, doppelte Geschw. = 0.5
-            player.arrayIndex += 1
-            player.idleIndex = 0
-        if player.arrayIndex >= len(gifArray):
-            player.arrayIndex = 0
-        player.image = pygame.transform.flip(gifArray[player.arrayIndex], imageFlip, False)
-        return player.image
+        self.idleIndex += 1
+        if self.idleIndex >= gifSpeed:  # normale Geschw. = 1, halbe Geschw. = 2, doppelte Geschw. = 0.5
+            self.arrayIndex += 1
+            self.idleIndex = 0
+        if self.arrayIndex >= len(gifArray):
+            self.arrayIndex = 0
+        self.image = pygame.transform.flip(gifArray[self.arrayIndex], imageFlip, False)
 
-    '''
-    def runLeft(self):
-        player.speedx = -8
-        player.playGif(player.run, 3, True)
-
-    def runRight(self):
-        player.speedx = 8
-        player.playGif(player.run, 3, False)
-    '''
-
-    def runDir(self, direction, imageFlip):  # 8 = right, -8 = left
-        player.speedx = direction
-        player.playGif(player.run, 3, imageFlip)
+    def runDir(self, direction):  # 8 = right, -8 = left
+        self.speedx = direction
 
     def update(self):
-        # Key pressed: constant movement
-        keystate = pygame.key.get_pressed()
-        mousepos = pygame.mouse.get_pos()
-        mousepress = pygame.mouse.get_pressed()
 
         self.speedx = 0
         self.speedy = 0
 
-        self.key_left = keystate[pygame.K_LEFT] or mousepos < (HW, HEIGHT) and mousepress == (1, 0, 0)
-        self.key_right = keystate[pygame.K_RIGHT] or mousepos > (HW, HEIGHT) and mousepress == (1, 0, 0)
+        key_state = pygame.key.get_pressed()
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_press = pygame.mouse.get_pressed()
+
+        self.key_left = key_state[pygame.K_LEFT] or mouse_pos < (HW, HEIGHT) and mouse_press == (1, 0, 0)
+        self.key_right = key_state[pygame.K_RIGHT] or mouse_pos > (HW, HEIGHT) and mouse_press == (1, 0, 0)
+        self.key_up = key_state[pygame.K_UP]
 
         # TODO: default mouse visible False
         pygame.mouse.set_visible(True)
+
+        # Key pressed: constant movement
         if self.key_left:
-            self.runDir(0, True)
+            self.playGif(player.run, 3, True)
         elif self.key_right:
-            self.runDir(0, False)
-        if keystate[pygame.K_DOWN]:
+            self.playGif(player.run, 3, False)
+        elif key_state[pygame.K_DOWN]:
             # self.image = pygame.image.load(pathPlayer + "landing.png").convert_alpha()
             self.image = self.newHeight
-            self.rect.bottom = HEIGHT - 50 + 19
+            self.rect.bottom = self.playerposy + 19
         else:
             self.playGif(self.idle, 2, False)
-            self.rect.bottom = HEIGHT - 50
+            self.rect.bottom = self.playerposy
 
         # Key pressed: only one move
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
-                self.rect.bottom = HEIGHT - 100
+                self.rect.bottom = self.playerposy - 50
                 self.image = pygame.image.load(pathPlayer + "jump.png").convert_alpha()
             elif event.key == pygame.K_f or event.key == pygame.K_ESCAPE:
                 if screen.get_flags() & pygame.FULLSCREEN:
@@ -201,7 +185,7 @@ class Player(pygame.sprite.Sprite):
         # Key release: only one move
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_UP:
-                self.rect.bottom = HEIGHT - 50
+                self.rect.bottom = self.playerposy
 
         self.rect.x += self.speedx
         if self.rect.right > WIDTH - 100:
@@ -220,12 +204,22 @@ class Mob(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
 
-        # enemy
+        # obstacle
         self.image = obstacle
         self.rect = self.image.get_rect()
         self.rect.x = WIDTH
         self.obstacle_ypos = HEIGHT - ground_size.get_rect().height - obstacle_size.get_rect().height + 15
         self.rect.y = self.obstacle_ypos
+
+
+def allow_run_right():
+    if player.key_right:
+        player.runDir(8)
+
+
+def allow_run_left():
+    if player.key_left:
+        player.runDir(-8)
 
 
 # sprite groups
@@ -238,17 +232,16 @@ mob = Mob()
 
 # add the sprites to groups
 mobs.add(mob)
-#all_sprites.add(mob)
 all_sprites.add(player)
 
 # Game loop
 running = True
 while running:
 
-    if player.playerposx < startScrollingPosX:
-        newPlayerPosX = player.playerposx
-    elif player.playerposx > stageWidth - startScrollingPosX:
-        newPlayerPosX = player.playerposx - stageWidth + WIDTH
+    if player.playerwidth < startScrollingPosX:
+        newPlayerPosX = player.playerwidth
+    elif player.playerwidth > stageWidth - startScrollingPosX:
+        newPlayerPosX = player.playerwidth - stageWidth + WIDTH
     else:
         newPlayerPosX = startScrollingPosX
 
@@ -289,28 +282,33 @@ while running:
 
     # check to see if mob hit the player
     # hits = pygame.sprite.spritecollide(player, mobs, False)
+    # hits = pygame.sprite.collide_rect(player, mob)
 
-    hits = pygame.sprite.collide_rect(player, mob)
-    mob_pos = mob.rect.x + stagePosX
-    playerpos = stagePosX * -1
-    value = 0
+    mob_posx = mob.rect.x + stagePosX
+    mob_posy = mob.rect.y
+    mob_width = mob.image.get_rect().width
 
-    if player.key_right:
-        if playerpos <= mob_pos:
-            player.runDir(8, False)
-            print('erste if')
-        elif player.key_left and playerpos >= mob_pos - 20:
-            player.runDir(-8, True)
-        else:
-            player.runDir(0, False)
-            print('erste else')
-    if player.key_left:
-        if playerpos <= mob_pos + 20:
-            player.runDir(-8, True)
-        elif player.key_right and playerpos >= mob_pos + 20:
-            player.runDir(8, False)
-        else:
-            player.runDir(0, False)
+    playerposx = stagePosX * -1
+    playerposy = player.rect.y
+
+    # player left of obstacle
+    if playerposx <= mob_posx - 20:
+        player.playerposy = HEIGHT - 50
+        allow_run_right()
+    # player on top of obstacle
+    elif mob_posx + mob_width + 50 >= playerposx >= mob_posx - 20 and playerposy <= mob_posy:
+        allow_run_right()
+        allow_run_left()
+        player.playerposy = mob_posy + 4
+    # player right of obstacle
+    elif playerposx >= mob_posx + mob_width + 50:
+        player.playerposy = HEIGHT - 50
+        allow_run_left()
+
+    if playerposx <= mob_posx:
+        allow_run_left()
+    elif playerposx >= mob_posx + mob_width + 40:
+        allow_run_right()
 
     # Draw / render
     all_sprites.draw(screen)
