@@ -1,7 +1,3 @@
-# KidsCanCode - Game Development with Pygame video series
-# Shmup game - part 1
-# Video link: https://www.youtube.com/watch?v=nGufy7weyGY
-# Player sprite and movement
 import pygame
 # import os  # to use path directory
 # import numpy as np  # to use numpy.asarray to convert a list to an array
@@ -19,12 +15,13 @@ pathPlayer = 'JungleAssetPack/Character/sprites/'
 pygame.init()
 pygame.mixer.init()
 clock = pygame.time.Clock()
+pygame.display.set_caption("DeathGame")
+
 # TODO: default in Fullscreen
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 # screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
 # TODO: default mouse visible False
 pygame.mouse.set_visible(True)
-pygame.display.set_caption("DeathGame")
 
 # World and Background
 ground = pygame.image.load(pathTileset + "Jungle_Ground.png").convert_alpha()
@@ -60,8 +57,6 @@ bgScaleWidth5 = bg5_size.get_rect().width
 
 # initialize for background scrolling
 stageWidth = bgScaleWidth5 * 2
-startScrollingPosX = HW
-stagePosX = 0
 
 ground_height = HEIGHT - 50
 
@@ -126,10 +121,10 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.idle[self.arrayIndex].get_rect()
         self.rect.centerx = WIDTH / 2
         self.rect.bottom = ground_height
-        self.speedx = 0
         self.speedy = 0
         self.x = 0
         self.playerposy = ground_height
+        self.stagePosX = 0
 
     def play_gif(self, gif_array, gif_speed, image_flip):
         self.idleIndex += 1
@@ -140,12 +135,7 @@ class Player(pygame.sprite.Sprite):
             self.arrayIndex = 0
         self.image = pygame.transform.flip(gif_array[self.arrayIndex], image_flip, False)
 
-    def run_dir(self, direction):  # 8 = right, -8 = left
-        self.speedx = direction
-
     def update(self):
-
-        self.speedx = 0
         self.speedy = 0
 
         key_state = pygame.key.get_pressed()
@@ -184,16 +174,11 @@ class Player(pygame.sprite.Sprite):
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_UP:
                 self.rect.bottom = self.playerposy
-
-        self.rect.x += self.speedx
-        if self.rect.right > WIDTH - 100:
-            self.rect.right = WIDTH - 100
-        if self.rect.left < 100:
-            self.rect.left = 100
-
         self.rect.y += self.speedy
+
         if self.rect.bottom > HEIGHT:
             self.rect.bottom = HEIGHT
+
         if self.rect.top < 0:
             self.rect.top = 0
 
@@ -212,12 +197,12 @@ class Mob(pygame.sprite.Sprite):
 
 def allow_run_right():
     if player.key_right:
-        player.run_dir(8)
+        player.stagePosX -= 8
 
 
 def allow_run_left():
     if player.key_left:
-        player.run_dir(-8)
+        player.stagePosX += 8
 
 
 def collision_detection():
@@ -225,12 +210,12 @@ def collision_detection():
     # hits = pygame.sprite.spritecollide(player, mobs, False)
     # hits = pygame.sprite.collide_rect(player, mob)
 
-    mob_posx = mob.rect.x + stagePosX
+    mob_posx = mob.rect.x + player.stagePosX
     # print("Block links:", mob_posx)
     mob_posy = mob.rect.y
     mob_width = mob.image.get_rect().width
 
-    playerposx = stagePosX * -1
+    playerposx = player.stagePosX * -1
     # print("Player Position:", playerposx)
     # print("Block rechts:", mob_posx + mob_width)
 
@@ -255,6 +240,30 @@ def collision_detection():
         allow_run_left()
     elif playerposx >= mob_posx + mob_width + 40:
         allow_run_right()
+    # print(playerposx)
+
+
+def load_bg():
+    rel_x = player.stagePosX % WIDTH
+    rel_x_bg2 = player.stagePosX * 0.7 % WIDTH
+    rel_x_bg3 = player.stagePosX * 0.8 % WIDTH
+    rel_x_bg4 = player.stagePosX * 0.9 % WIDTH
+
+    def bg_speed(bg_size, rel_pos):
+        screen.blit(bg_size, (rel_pos - WIDTH, 0))
+        if rel_pos < WIDTH:
+            screen.blit(bg_size, (rel_pos, 0))
+
+    bg_speed(bg1_size, rel_x)
+    bg_speed(bg2_size, rel_x_bg2)
+    bg_speed(bg3_size, rel_x_bg3)
+    bg_speed(bg4_size, rel_x_bg4)
+    bg_speed(bg5_size, rel_x)
+
+    rel_ground = player.stagePosX % ground_size.get_rect().width
+    screen.blit(ground_size, (rel_ground - ground_size.get_rect().width, 420))
+    if rel_ground < WIDTH:
+        screen.blit(ground_size, (rel_ground, 420))
 
 
 # sprite groups
@@ -273,37 +282,10 @@ all_sprites.add(player)
 running = True
 while running:
 
-    if player.playerwidth < startScrollingPosX:
-        newPlayerPosX = player.playerwidth
-    elif player.playerwidth > stageWidth - startScrollingPosX:
-        newPlayerPosX = player.playerwidth - stageWidth + WIDTH
-    else:
-        newPlayerPosX = startScrollingPosX
+    load_bg()
 
-    stagePosX += -player.speedx
-
-    rel_x = stagePosX % bgScaleWidth5
-    screen.blit(bg1_size, (rel_x - bgScaleWidth1, 0))
-    screen.blit(bg2_size, (rel_x - bgScaleWidth2, 0))
-    screen.blit(bg3_size, (rel_x - bgScaleWidth3, 0))
-    screen.blit(bg4_size, (rel_x - bgScaleWidth4, 0))
-    screen.blit(bg5_size, (rel_x - bgScaleWidth5, 0))
-
-    if rel_x < WIDTH:
-        screen.blit(bg1_size, (rel_x, 0))
-        screen.blit(bg2_size, (rel_x, 0))
-        screen.blit(bg3_size, (rel_x, 0))
-        screen.blit(bg4_size, (rel_x, 0))
-        screen.blit(bg5_size, (rel_x, 0))
-
-    rel_ground = stagePosX % ground_size.get_rect().width
-    screen.blit(ground_size, (rel_ground - ground_size.get_rect().width, 420))
-    if rel_ground < WIDTH:
-        screen.blit(ground_size, (rel_ground, 420))
-
-    # rel_obstacle = stagePosX % ground_size.get_rect().width
-    screen.blit(obstacle_size, (mob.rect.x + stagePosX, mob.rect.y))
-    # print("Block Zeichnung:", mob.rect.x + stagePosX)
+    screen.blit(obstacle_size, (mob.rect.x + player.stagePosX, mob.rect.y))
+    # print("Render Block:", mob.rect.x + stagePosX)
 
     # keep loop running at the right speed
     clock.tick(FPS)
