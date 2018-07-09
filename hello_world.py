@@ -8,7 +8,6 @@ import pygame
 
 WIDTH, HEIGHT = 800, 480
 HW, HH = WIDTH / 2, HEIGHT / 2
-x = 0
 FPS = 60
 
 # path directories
@@ -63,8 +62,6 @@ bgScaleWidth5 = bg5_size.get_rect().width
 stageWidth = bgScaleWidth5 * 2
 startScrollingPosX = HW
 stagePosX = 0
-mobPosX = 0
-count = 0
 
 ground_height = HEIGHT - 50
 
@@ -134,16 +131,16 @@ class Player(pygame.sprite.Sprite):
         self.x = 0
         self.playerposy = ground_height
 
-    def playGif(self, gifArray, gifSpeed, imageFlip):
+    def play_gif(self, gif_array, gif_speed, image_flip):
         self.idleIndex += 1
-        if self.idleIndex >= gifSpeed:  # normale Geschw. = 1, halbe Geschw. = 2, doppelte Geschw. = 0.5
+        if self.idleIndex >= gif_speed:  # normale Geschw. = 1, halbe Geschw. = 2, doppelte Geschw. = 0.5
             self.arrayIndex += 1
             self.idleIndex = 0
-        if self.arrayIndex >= len(gifArray):
+        if self.arrayIndex >= len(gif_array):
             self.arrayIndex = 0
-        self.image = pygame.transform.flip(gifArray[self.arrayIndex], imageFlip, False)
+        self.image = pygame.transform.flip(gif_array[self.arrayIndex], image_flip, False)
 
-    def runDir(self, direction):  # 8 = right, -8 = left
+    def run_dir(self, direction):  # 8 = right, -8 = left
         self.speedx = direction
 
     def update(self):
@@ -161,15 +158,15 @@ class Player(pygame.sprite.Sprite):
 
         # Key pressed: constant movement
         if self.key_left:
-            self.playGif(player.run, 3, True)
+            self.play_gif(player.run, 3, True)
         elif self.key_right:
-            self.playGif(player.run, 3, False)
+            self.play_gif(player.run, 3, False)
         elif key_state[pygame.K_DOWN]:
             # self.image = pygame.image.load(pathPlayer + "landing.png").convert_alpha()
             self.image = self.newHeight
             self.rect.bottom = self.playerposy + self.HPH
         else:
-            self.playGif(self.idle, 2, False)
+            self.play_gif(self.idle, 2, False)
             self.rect.bottom = self.playerposy
 
         # Key pressed: only one move
@@ -208,19 +205,19 @@ class Mob(pygame.sprite.Sprite):
         # obstacle
         self.image = obstacle
         self.rect = self.image.get_rect()
-        self.rect.x = WIDTH
+        self.rect.x = 800  # TODO: 800 ist momentan die einzig funktionierende Position für die Collision...
         self.obstacle_ypos = HEIGHT - ground_size.get_rect().height - obstacle_size.get_rect().height + 15
         self.rect.y = self.obstacle_ypos
 
 
 def allow_run_right():
     if player.key_right:
-        player.runDir(8)
+        player.run_dir(8)
 
 
 def allow_run_left():
     if player.key_left:
-        player.runDir(-8)
+        player.run_dir(-8)
 
 
 def collision_detection():
@@ -229,25 +226,30 @@ def collision_detection():
     # hits = pygame.sprite.collide_rect(player, mob)
 
     mob_posx = mob.rect.x + stagePosX
+    # print("Block links:", mob_posx)
     mob_posy = mob.rect.y
     mob_width = mob.image.get_rect().width
 
     playerposx = stagePosX * -1
-    playerposy = player.rect.y
+    # print("Player Position:", playerposx)
+    # print("Block rechts:", mob_posx + mob_width)
 
     # player left of obstacle
     if playerposx <= mob_posx - 20:
-        player.playerposy = ground_height
+        # print("if erfüllt:", playerposx, "kleiner als", mob_posx)
         allow_run_right()
+        player.playerposy = ground_height
     # player on top of obstacle
-    elif mob_posx + mob_width + 50 >= playerposx >= mob_posx - 20 and playerposy <= mob_posy:
+    elif mob_posx + mob_width + 50 >= playerposx >= mob_posx - 20 and player.rect.y <= mob_posy:
+        # print("elif erfüllt:", mob_posx + mob_width, "größer als", playerposx, "größer als", mob_posx)
         allow_run_right()
         allow_run_left()
         player.playerposy = mob_posy + 4
     # player right of obstacle
     elif playerposx >= mob_posx + mob_width + 50:
-        player.playerposy = ground_height
+        # print("letzte elif:", playerposx, "größer als", mob_posx + mob_width)
         allow_run_left()
+        player.playerposy = ground_height
     # distance between player and obstacle
     if playerposx <= mob_posx:
         allow_run_left()
@@ -299,8 +301,9 @@ while running:
     if rel_ground < WIDTH:
         screen.blit(ground_size, (rel_ground, 420))
 
-    rel_obstacle = stagePosX % ground_size.get_rect().width
+    # rel_obstacle = stagePosX % ground_size.get_rect().width
     screen.blit(obstacle_size, (mob.rect.x + stagePosX, mob.rect.y))
+    # print("Block Zeichnung:", mob.rect.x + stagePosX)
 
     # keep loop running at the right speed
     clock.tick(FPS)
