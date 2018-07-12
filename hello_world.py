@@ -27,8 +27,11 @@ pygame.mouse.set_visible(True)
 ground = pygame.image.load(pathTileset + "Jungle_Ground.png").convert_alpha()
 ground_size = pygame.transform.scale(ground, (800, 60))
 
-obstacle = pygame.image.load(pathTileset + "tileset-01.png").convert_alpha()
-obstacle_size = pygame.transform.scale(obstacle, (60, 60))
+obstacle_lv1 = pygame.image.load(pathTileset + "tileset-01.png").convert_alpha()
+obstacle_lv1_size = pygame.transform.scale(obstacle_lv1, (60, 60))
+
+obstacle_lv2 = pygame.image.load(pathTileset + "tileset-06.png").convert_alpha()
+obstacle_lv2_size = pygame.transform.scale(obstacle_lv2, (124, 34))
 
 # bg 1
 bg1 = pygame.image.load(pathBackground + "plx-1.png").convert_alpha()
@@ -136,6 +139,7 @@ class Player(pygame.sprite.Sprite):
         if self.arrayIndex >= len(gif_array):
             self.arrayIndex = 0
         self.image = pygame.transform.flip(gif_array[self.arrayIndex], image_flip, False)
+        return self.image
 
     def update(self):
         self.speedy = 0
@@ -185,31 +189,79 @@ class Player(pygame.sprite.Sprite):
             self.rect.top = 0
 
 
+class Enemy(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+
+        # GIF cactus
+        self.cactus = []
+        self.cactus.append(pygame.image.load(pathTileset + "cacti/cacti-01.png").convert_alpha())
+        self.cactus.append(pygame.image.load(pathTileset + "cacti/cacti-02.png").convert_alpha())
+
+        # self.cactus_size = pygame.transform.scale(player.play_gif(self.cactus, 1, True), (50, 44))
+        self.cactus_size = pygame.transform.scale(player.play_gif(self.cactus, 1, True), (50, 44))
+        self.img_cacti = self.cactus_size.get_rect()
+        self.img_cacti.x = 2100
+        self.img_cacti.y = HEIGHT - ground_size.get_rect().height - self.cactus_size.get_height() + 15
+
+
 class Mob(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = obstacle
-        self.obstacle_ypos = HEIGHT - ground_size.get_rect().height - obstacle_size.get_rect().height + 15
+        # LEVEL 1: obstacles on ground ---------------------------
+        self.image_lv1 = obstacle_lv1
+        self.obstacle_lv1_ypos = HEIGHT - ground_size.get_rect().height - obstacle_lv1_size.get_rect().height + 15
 
         # first obstacle
-        self.rect = self.image.get_rect()
-        self.rect.x = 600
-        self.rect.y = self.obstacle_ypos
+        self.rect_lv1_1 = self.image_lv1.get_rect()
+        self.rect_lv1_1.x = 600
+        self.rect_lv1_1.y = self.obstacle_lv1_ypos
 
         # second obstacle
-        self.rect2 = self.image.get_rect()
-        self.rect2.x = 1200
+        self.rect_lv1_2 = self.image_lv1.get_rect()
+        self.rect_lv1_2.x = 1200
 
         # third obstacle
-        self.rect3 = self.image.get_rect()
-        self.rect3.x = 1800
+        self.rect_lv1_3 = self.image_lv1.get_rect()
+        self.rect_lv1_3.x = 1800
 
-        # add all x positions of the obstacles to the array
+        # LEVEL 2 ------------------------------------------------
+        self.image_lv2 = obstacle_lv2
+        self.obstacle_lv2_ypos = HEIGHT - ground_size.get_rect().height - 100
+
+        self.rect_lv2_1 = self.image_lv2.get_rect()
+        self.rect_lv2_1.x = 1950
+        self.rect_lv2_1.y = self.obstacle_lv2_ypos
+
+        # Obstacle Arrays ----------------------------------------
+        # add all x positions of the obstacles
         self.all_mobs_x = []
-        self.all_mobs_x.append(self.rect.x)
-        self.all_mobs_x.append(self.rect2.x)
-        self.all_mobs_x.append(self.rect3.x)
+        self.all_mobs_x.append(self.rect_lv1_1.x)
+        self.all_mobs_x.append(self.rect_lv1_2.x)
+        self.all_mobs_x.append(self.rect_lv1_3.x)
+        self.all_mobs_x.append(self.rect_lv2_1.x)
+
+        # add all x positions of the obstacles
+        self.all_mobs_y = []
+        self.all_mobs_y.append(self.rect_lv1_1.y)
+        self.all_mobs_y.append(self.rect_lv1_1.y)
+        self.all_mobs_y.append(self.rect_lv1_1.y)
+        self.all_mobs_y.append(self.rect_lv2_1.y)
+
+        # add all width values of the obstacles
+        self.all_mobs_width = []
+        self.all_mobs_width.append(self.image_lv1.get_rect().width)
+        self.all_mobs_width.append(self.image_lv1.get_rect().width)
+        self.all_mobs_width.append(self.image_lv1.get_rect().width)
+        self.all_mobs_width.append(self.image_lv2.get_rect().width)
+
+        # add all height values of the obstacles
+        self.all_mobs_height = []
+        self.all_mobs_height.append(self.image_lv1.get_rect().height)
+        self.all_mobs_height.append(self.image_lv1.get_rect().height)
+        self.all_mobs_height.append(self.image_lv1.get_rect().height)
+        self.all_mobs_height.append(self.image_lv2.get_rect().height)
 
 
 def allow_run_right():
@@ -222,15 +274,22 @@ def allow_run_left():
         player.stagePosX += 8
 
 
-def collision_detection():
-    # check to see if mob hit the player
+"""
+def collision_enemy():
     # hits = pygame.sprite.spritecollide(player, mobs, False)
     # hits = pygame.sprite.collide_rect(player, mob)
+    hits = pygame.sprite.spritecollide(player, enemies, False)
+    if hits:
+        print("Ouch!")
+"""
 
+
+def collision_mob():
     mob_posx = mob.all_mobs_x[player.mobs_index] + player.stagePosX
-    # print("Block Position:", mob_posx)
-    mob_posy = mob.rect.y
-    mob_width = mob.image.get_rect().width
+    mob_posy = mob.all_mobs_y[player.mobs_index]
+
+    mob_width = mob.all_mobs_width[player.mobs_index]
+    # print(mob_width)
 
     playerposx = player.stagePosX * -1
     # print("Player Position:", playerposx)
@@ -243,14 +302,18 @@ def collision_detection():
         if player.mobs_index > 0:
             player.mobs_index -= 1
     # player on top of obstacle
-    elif mob_posx + mob_width + 50 >= playerposx >= mob_posx - 20 and player.rect.y <= mob_posy:
-        # print("elif erfüllt:", mob_posx + mob_width, "größer als", playerposx, "größer als", mob_posx)
+    elif mob_posx + mob_width * 2 >= playerposx >= mob_posx - 20 and player.rect.y <= mob_posy:
+        # print("elif erfüllt:", mob_posx + mob_width + 50, "größer als", playerposx, "größer als", mob_posx - 20)
         allow_run_right()
         allow_run_left()
         player.playerposy = mob_posy + 4
+    # player underneath obstacle
+    elif mob_posy + mob.all_mobs_height[player.mobs_index] <= player.rect.y:
+        allow_run_right()
+        allow_run_left()
     # player right of obstacle
-    elif playerposx >= mob_posx + mob_width + 50:
-        # print("letzte elif:", playerposx, "größer als", mob_posx + mob_width)
+    elif playerposx >= mob_posx + mob_width * 2:
+        # print("letzte elif:", playerposx, "größer als", mob_posx + mob_width + 50)
         allow_run_left()
         player.playerposy = ground_height
         player.mobs_index += 1
@@ -261,8 +324,6 @@ def collision_detection():
         allow_run_left()
     elif playerposx >= mob_posx + mob_width + 10:
         allow_run_right()
-    # print(playerposx)
-    print(player.mobs_index)
 
 
 def load_bg():
@@ -293,13 +354,16 @@ def load_bg():
 # sprite groups
 all_sprites = pygame.sprite.Group()
 mobs = pygame.sprite.Group()
+enemies = pygame.sprite.Group()
 
 # classes
 player = Player()
 mob = Mob()
+enemy = Enemy()
 
 # add the sprites to groups
 mobs.add(mob)
+enemies.add(enemy)
 all_sprites.add(player)
 
 # Game loop
@@ -308,7 +372,7 @@ while running:
 
     load_bg()
 
-    def test_mob(mob_rect_x):
+    def rel_mob_pos(mob_rect_x):
         if mob_rect_x <= WIDTH:
             dist_to_w = (WIDTH - mob_rect_x) / 2
         else:
@@ -316,10 +380,12 @@ while running:
         return mob_rect_x + player.stagePosX + dist_to_w
 
     # draw all obstacles
-    screen.blit(obstacle_size, (test_mob(mob.rect.x), mob.rect.y))
-    screen.blit(obstacle_size, (test_mob(mob.rect2.x), mob.rect.y))
-    screen.blit(obstacle_size, (test_mob(mob.rect3.x), mob.rect.y))
-    # print("Render Block:", mob.rect.x + stagePosX)
+    screen.blit(obstacle_lv1_size, (rel_mob_pos(mob.rect_lv1_1.x), mob.rect_lv1_1.y))
+    screen.blit(obstacle_lv1_size, (rel_mob_pos(mob.rect_lv1_2.x), mob.rect_lv1_1.y))
+    screen.blit(obstacle_lv1_size, (rel_mob_pos(mob.rect_lv1_3.x), mob.rect_lv1_1.y))
+    screen.blit(obstacle_lv2_size, (rel_mob_pos(mob.rect_lv2_1.x), mob.rect_lv2_1.y))
+
+    screen.blit(enemy.cactus_size, (rel_mob_pos(enemy.img_cacti.x), enemy.img_cacti.y))
 
     # keep loop running at the right speed
     clock.tick(FPS)
@@ -332,8 +398,9 @@ while running:
     # Update
     all_sprites.update()
 
-    # check to see if mob hit the player
-    collision_detection()
+    # check to see if player hit something
+    collision_mob()
+    # collision_enemy()
 
     # Draw / render
     all_sprites.draw(screen)
