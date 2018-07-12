@@ -203,7 +203,7 @@ class Mob(pygame.sprite.Sprite):
 
         # third obstacle
         self.rect3 = self.image.get_rect()
-        self.rect3.x = 1100
+        self.rect3.x = 1600
 
         # add all x positions of the obstacles to the array
         self.all_mobs_x = []
@@ -245,7 +245,7 @@ def collision_detection():
 
     # mob_posx = mob.rect.x + player.stagePosX
     mob_posx = mob.all_mobs_x[player.mobs_index] + player.stagePosX
-    print("Block Position:", mob.all_mobs_x[player.mobs_index])
+    #print("Block Position:", mob_posx)
     mob_posy = mob.rect.y
     mob_width = mob.image.get_rect().width
 
@@ -254,21 +254,22 @@ def collision_detection():
 
     # player left of obstacle
     if playerposx <= mob_posx - 20:
-        # print("if erfüllt:", playerposx, "kleiner als", mob_posx)
+        #print("if erfüllt:", playerposx, "kleiner als", mob_posx)
         allow_run_right()
         player.playerposy = ground_height
     # player on top of obstacle
     elif mob_posx + mob_width + 50 >= playerposx >= mob_posx - 20 and player.rect.y <= mob_posy:
-        # print("elif erfüllt:", mob_posx + mob_width, "größer als", playerposx, "größer als", mob_posx)
+        #print("elif erfüllt:", mob_posx + mob_width, "größer als", playerposx, "größer als", mob_posx)
         allow_run_right()
         allow_run_left()
         player.playerposy = mob_posy + 4
     # player right of obstacle
     elif playerposx >= mob_posx + mob_width + 50:
-        # print("letzte elif:", playerposx, "größer als", mob_posx + mob_width)
+       # print("letzte elif:", playerposx, "größer als", mob_posx + mob_width)
         allow_run_left()
         player.playerposy = ground_height
         player.mobs_index += 1
+
         if player.mobs_index >= len(mob.all_mobs_x):
             player.mobs_index = 0
     # distance between player and obstacle
@@ -323,9 +324,10 @@ while running:
     load_bg()
 
     # draw all obstacles
-    screen.blit(obstacle_size, (mob.rect.x + player.stagePosX, mob.rect.y))
+    screen.blit(obstacle_size, (mob.rect.x + player.stagePosX + 150, mob.rect.y))
     screen.blit(obstacle_size, (mob.rect2.x + player.stagePosX, mob.rect.y))
-    screen.blit(obstacle_size, (mob.rect3.x + player.stagePosX, mob.rect.y))
+    screen.blit(obstacle_size, (mob.rect3.x + player.stagePosX - 400, mob.rect.y))
+    print(mob.rect.x + player.stagePosX)
     # print("Render Block:", mob.rect.x + stagePosX)
 
     # keep loop running at the right speed
