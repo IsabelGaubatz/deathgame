@@ -194,7 +194,7 @@ class Mob(pygame.sprite.Sprite):
 
         # first obstacle
         self.rect = self.image.get_rect()
-        self.rect.x = 600  # TODO: 800 ist momentan die einzig funktionierende Position für die Collision...
+        self.rect.x = 600
         self.rect.y = self.obstacle_ypos
 
         # second obstacle
@@ -203,7 +203,7 @@ class Mob(pygame.sprite.Sprite):
 
         # third obstacle
         self.rect3 = self.image.get_rect()
-        self.rect3.x = 1600
+        self.rect3.x = 1800
 
         # add all x positions of the obstacles to the array
         self.all_mobs_x = []
@@ -240,6 +240,8 @@ def collision_detection():
         # print("if erfüllt:", playerposx, "kleiner als", mob_posx)
         allow_run_right()
         player.playerposy = ground_height
+        if player.mobs_index > 0:
+            player.mobs_index -= 1
     # player on top of obstacle
     elif mob_posx + mob_width + 50 >= playerposx >= mob_posx - 20 and player.rect.y <= mob_posy:
         # print("elif erfüllt:", mob_posx + mob_width, "größer als", playerposx, "größer als", mob_posx)
@@ -252,15 +254,15 @@ def collision_detection():
         allow_run_left()
         player.playerposy = ground_height
         player.mobs_index += 1
-
         if player.mobs_index >= len(mob.all_mobs_x):
             player.mobs_index = 0
     # distance between player and obstacle
-    if playerposx <= mob_posx:
+    if playerposx <= mob_posx + 10:
         allow_run_left()
-    elif playerposx >= mob_posx + mob_width + 40:
+    elif playerposx >= mob_posx + mob_width + 10:
         allow_run_right()
     # print(playerposx)
+    print(player.mobs_index)
 
 
 def load_bg():
