@@ -80,6 +80,8 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
 
+        self.mobs_index = 0
+
         # GIF Idle
         self.idle = []
         self.idle.append(pygame.image.load(pathPlayer + 'idle-png/idle-01.png').convert_alpha())
@@ -187,12 +189,43 @@ class Mob(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
 
-        # obstacle
         self.image = obstacle
-        self.rect = self.image.get_rect()
-        self.rect.x = 800  # TODO: 800 ist momentan die einzig funktionierende Position für die Collision...
         self.obstacle_ypos = HEIGHT - ground_size.get_rect().height - obstacle_size.get_rect().height + 15
+
+        # first obstacle
+        self.rect = self.image.get_rect()
+        self.rect.x = 500  # TODO: 800 ist momentan die einzig funktionierende Position für die Collision...
         self.rect.y = self.obstacle_ypos
+
+        # second obstacle
+        self.rect2 = self.image.get_rect()
+        self.rect2.x = 800
+
+        # third obstacle
+        self.rect3 = self.image.get_rect()
+        self.rect3.x = 1100
+
+        # add all x positions of the obstacles to the array
+        self.all_mobs_x = []
+        self.all_mobs_x.append(self.rect.x)
+        self.all_mobs_x.append(self.rect2.x)
+        self.all_mobs_x.append(self.rect3.x)
+
+
+"""
+def mobs_counter():
+    mob_posx = mob.rect.x + player.stagePosX
+    playerposx = player.stagePosX * -1
+    mob_width = mob.image.get_rect().width
+    mobs_index = 0
+
+    if playerposx >= mob_posx + mob_width + 50:
+        mobs_index += 1
+        if mobs_index >= len(mob.all_mobs_x):
+            mobs_index = 0
+    print(mobs_index)
+    return mobs_index
+"""
 
 
 def allow_run_right():
@@ -210,14 +243,14 @@ def collision_detection():
     # hits = pygame.sprite.spritecollide(player, mobs, False)
     # hits = pygame.sprite.collide_rect(player, mob)
 
-    mob_posx = mob.rect.x + player.stagePosX
-    # print("Block links:", mob_posx)
+    # mob_posx = mob.rect.x + player.stagePosX
+    mob_posx = mob.all_mobs_x[player.mobs_index] + player.stagePosX
+    print("Block Position:", mob.all_mobs_x[player.mobs_index])
     mob_posy = mob.rect.y
     mob_width = mob.image.get_rect().width
 
     playerposx = player.stagePosX * -1
     # print("Player Position:", playerposx)
-    # print("Block rechts:", mob_posx + mob_width)
 
     # player left of obstacle
     if playerposx <= mob_posx - 20:
@@ -235,6 +268,9 @@ def collision_detection():
         # print("letzte elif:", playerposx, "größer als", mob_posx + mob_width)
         allow_run_left()
         player.playerposy = ground_height
+        player.mobs_index += 1
+        if player.mobs_index >= len(mob.all_mobs_x):
+            player.mobs_index = 0
     # distance between player and obstacle
     if playerposx <= mob_posx:
         allow_run_left()
@@ -244,6 +280,7 @@ def collision_detection():
 
 
 def load_bg():
+    # background
     rel_x = player.stagePosX % WIDTH
     rel_x_bg2 = player.stagePosX * 0.7 % WIDTH
     rel_x_bg3 = player.stagePosX * 0.8 % WIDTH
@@ -260,6 +297,7 @@ def load_bg():
     bg_speed(bg4_size, rel_x_bg4)
     bg_speed(bg5_size, rel_x)
 
+    # ground
     rel_ground = player.stagePosX % ground_size.get_rect().width
     screen.blit(ground_size, (rel_ground - ground_size.get_rect().width, 420))
     if rel_ground < WIDTH:
@@ -284,7 +322,10 @@ while running:
 
     load_bg()
 
+    # draw all obstacles
     screen.blit(obstacle_size, (mob.rect.x + player.stagePosX, mob.rect.y))
+    screen.blit(obstacle_size, (mob.rect2.x + player.stagePosX, mob.rect.y))
+    screen.blit(obstacle_size, (mob.rect3.x + player.stagePosX, mob.rect.y))
     # print("Render Block:", mob.rect.x + stagePosX)
 
     # keep loop running at the right speed
