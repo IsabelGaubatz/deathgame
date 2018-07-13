@@ -188,21 +188,34 @@ class Player(pygame.sprite.Sprite):
         if self.rect.top < 0:
             self.rect.top = 0
 
+        collision_mob()
+
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
 
+        """
         # GIF cactus
         self.cactus = []
         self.cactus.append(pygame.image.load(pathTileset + "cacti/cacti-01.png").convert_alpha())
         self.cactus.append(pygame.image.load(pathTileset + "cacti/cacti-02.png").convert_alpha())
-
-        # self.cactus_size = pygame.transform.scale(player.play_gif(self.cactus, 1, True), (50, 44))
+        
         self.cactus_size = pygame.transform.scale(player.play_gif(self.cactus, 1, True), (50, 44))
-        self.img_cacti = self.cactus_size.get_rect()
-        self.img_cacti.x = 2100
-        self.img_cacti.y = HEIGHT - ground_size.get_rect().height - self.cactus_size.get_height() + 15
+        """
+        self.image = pygame.image.load(pathTileset + "cacti/cacti-01.png").convert_alpha()
+        self.cactus_size = pygame.transform.scale(self.image, (50, 40))
+        self.rect = self.cactus_size.get_rect()
+        self.rect.x = 200  # 2100
+        self.rect.y = HEIGHT - ground_size.get_rect().height - self.cactus_size.get_height() + 15
+
+        """
+        self.img_plant = pygame.image.load(pathTileset + "plant/plant_004.png").convert_alpha()
+        self.plant_size = pygame.transform.scale(self.img_plant, (39, 47))
+        self.rect_plant = self.plant_size.get_rect()
+        self.rect_plant.x = 400  # 1800
+        self.rect_plant.y = HEIGHT - ground_size.get_rect().height - self.plant_size.get_height() + 15
+        """
 
 
 class Mob(pygame.sprite.Sprite):
@@ -272,16 +285,6 @@ def allow_run_right():
 def allow_run_left():
     if player.key_left:
         player.stagePosX += 8
-
-
-"""
-def collision_enemy():
-    # hits = pygame.sprite.spritecollide(player, mobs, False)
-    # hits = pygame.sprite.collide_rect(player, mob)
-    hits = pygame.sprite.spritecollide(player, enemies, False)
-    if hits:
-        print("Ouch!")
-"""
 
 
 def collision_mob():
@@ -385,7 +388,8 @@ while running:
     screen.blit(obstacle_lv1_size, (rel_mob_pos(mob.rect_lv1_3.x), mob.rect_lv1_1.y))
     screen.blit(obstacle_lv2_size, (rel_mob_pos(mob.rect_lv2_1.x), mob.rect_lv2_1.y))
 
-    screen.blit(enemy.cactus_size, (rel_mob_pos(enemy.img_cacti.x), enemy.img_cacti.y))
+    screen.blit(enemy.cactus_size, (rel_mob_pos(enemy.rect.x), enemy.rect.y))
+    # screen.blit(enemy.plant_size, (rel_mob_pos(enemy.rect_plant.x), enemy.rect_plant.y))
 
     # keep loop running at the right speed
     clock.tick(FPS)
@@ -399,8 +403,14 @@ while running:
     all_sprites.update()
 
     # check to see if player hit something
-    collision_mob()
-    # collision_enemy()
+    # collision_mob()
+    # hits = pygame.sprite.spritecollide(player, mobs, False)
+    # hits = pygame.sprite.collide_rect(player, mob)
+    # hits = pygame.sprite.spritecollide(player, enemies, False)
+    hits = pygame.sprite.collide_rect(player, enemy)
+    if hits:
+        print("Ouch!")
+    print(hits)
 
     # Draw / render
     all_sprites.draw(screen)
