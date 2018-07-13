@@ -194,7 +194,7 @@ class Enemy(pygame.sprite.Sprite):
         self.img_cacti = pygame.image.load(pathTileset + "cacti/cacti-01.png").convert_alpha()
         self.cactus_size = pygame.transform.scale(self.img_cacti, (50, 40))
         self.rect_cacti = self.cactus_size.get_rect()
-        self.rect_cacti.x = 2100  # 2100
+        self.rect_cacti.x = 2100
         self.rect_cacti.y = HEIGHT - ground_size.get_rect().height - self.cactus_size.get_height() + 15
         self.rect_cacti_width = self.cactus_size.get_rect().width
 
@@ -217,11 +217,9 @@ class Enemy(pygame.sprite.Sprite):
         return self.image
 
     def update(self):
-        # print(player.play_gif(self.plant, 100, False))
-        #self.plant_size = self.play_gif(self.plant, 5, False)
-        self.plant_size = pygame.transform.scale(self.play_gif(self.plant, 5, False), (20, 30))
-        self.rect_plant.x = 1825  # 1825
-        self.rect_plant.y = HEIGHT - ground_size.get_rect().height - self.plant_size.get_height() + 15
+        self.plant_size = pygame.transform.scale(self.play_gif(self.plant, 5, False), (40, 40))
+        self.rect_plant.x = 1810
+        self.rect_plant.y = HEIGHT - ground_size.get_rect().height - self.plant_size.get_height() - 40
 
 
 class Mob(pygame.sprite.Sprite):
@@ -349,15 +347,13 @@ def collision_enemy():
     counter_to_str = str(enemy.death_counter)
     textsurface = myfont.render("Death Counter: " + counter_to_str, False, (240, 240, 240))
 
-    if enemy.rect_cacti.x / 2 <= playerposx <= enemy.rect_cacti.x / 2 + enemy.rect_cacti_width:
-        # print("True")
+    if enemy.rect_cacti.x / 2 <= playerposx <= enemy.rect_cacti.x / 2 + enemy.rect_cacti_width and player.rect.y >= enemy.rect_cacti.y:
         player.stagePosX = 0
         screen.fill((0, 0, 0))
         enemy.display_counter = 1
         enemy.death_counter += 1
     if enemy.display_counter == 1:
         screen.blit(textsurface, (20, 20))
-    # print(enemy.display_counter)
 
 
 def load_bg():
