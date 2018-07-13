@@ -1,6 +1,10 @@
 import pygame
-# import os  # to use path directory
+import os  # to use path directory
 # import numpy as np  # to use numpy.asarray to convert a list to an array
+
+# text
+pygame.font.init()
+myfont = pygame.font.SysFont('Helvetica', 20)
 
 WIDTH, HEIGHT = 800, 480
 HW, HH = WIDTH / 2, HEIGHT / 2
@@ -10,6 +14,7 @@ FPS = 60
 pathBackground = 'JungleAssetPack/parallaxBackground/'
 pathTileset = 'JungleAssetPack/jungletileset/'
 pathPlayer = 'JungleAssetPack/Character/sprites/'
+pathPlant = 'JungleAssetPack/jungletileset/plant/'
 
 # initialize pygame and create window
 pygame.init()
@@ -65,21 +70,6 @@ ground_height = HEIGHT - 50
 
 
 class Player(pygame.sprite.Sprite):
-
-    # TODO: alle Bilder aus einem Ordner laden
-    """
-    def load_images(self, path_to_directory):
-        image_dict = {}
-        self.myArray = []
-        for filename in os.listdir(path_to_directory):
-            if filename.endswith('.png'):
-                pathdir = os.path.join(path_to_directory, filename)
-                key = filename[:-4]
-                image_dict[key] = pygame.image.load(pathdir).convert()
-                self.myArray = np.asarray(image_dict)
-        return self.myArray
-    """
-
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
 
@@ -188,34 +178,31 @@ class Player(pygame.sprite.Sprite):
         if self.rect.top < 0:
             self.rect.top = 0
 
-        collision_mob()
-
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
 
-        """
-        # GIF cactus
-        self.cactus = []
-        self.cactus.append(pygame.image.load(pathTileset + "cacti/cacti-01.png").convert_alpha())
-        self.cactus.append(pygame.image.load(pathTileset + "cacti/cacti-02.png").convert_alpha())
-        
-        self.cactus_size = pygame.transform.scale(player.play_gif(self.cactus, 1, True), (50, 44))
-        """
-        self.image = pygame.image.load(pathTileset + "cacti/cacti-01.png").convert_alpha()
-        self.cactus_size = pygame.transform.scale(self.image, (50, 40))
-        self.rect = self.cactus_size.get_rect()
-        self.rect.x = 200  # 2100
-        self.rect.y = HEIGHT - ground_size.get_rect().height - self.cactus_size.get_height() + 15
+        # death counter
+        self.display_counter = 0
+        self.death_counter = 0
 
-        """
-        self.img_plant = pygame.image.load(pathTileset + "plant/plant_004.png").convert_alpha()
+        self.plant = []
+        for image in os.listdir(pathPlant):
+            self.plant.append(pygame.image.load(pathPlant + image).convert_alpha())
+
+        self.img_cacti = pygame.image.load(pathTileset + "cacti/cacti-01.png").convert_alpha()
+        self.cactus_size = pygame.transform.scale(self.img_cacti, (50, 40))
+        self.rect_cacti = self.cactus_size.get_rect()
+        self.rect_cacti.x = 2100  # 2100
+        self.rect_cacti.y = HEIGHT - ground_size.get_rect().height - self.cactus_size.get_height() + 15
+        self.rect_cacti_width = self.cactus_size.get_rect().width
+
+        self.img_plant = pygame.image.load(pathTileset + "plant.png").convert_alpha()
         self.plant_size = pygame.transform.scale(self.img_plant, (39, 47))
         self.rect_plant = self.plant_size.get_rect()
-        self.rect_plant.x = 400  # 1800
+        self.rect_plant.x = 1825  # 1825
         self.rect_plant.y = HEIGHT - ground_size.get_rect().height - self.plant_size.get_height() + 15
-        """
 
 
 class Mob(pygame.sprite.Sprite):
@@ -329,6 +316,31 @@ def collision_mob():
         allow_run_right()
 
 
+def rel_mob_pos(mob_rect_x):
+    if mob_rect_x <= WIDTH:
+        dist_to_w = (WIDTH - mob_rect_x) / 2
+    else:
+        dist_to_w = (WIDTH - mob_rect_x) / 2
+    return mob_rect_x + player.stagePosX + dist_to_w
+
+
+def collision_enemy():
+    playerposx = player.stagePosX * -1
+
+    counter_to_str = str(enemy.death_counter)
+    textsurface = myfont.render("Death Counter: " + counter_to_str, False, (240, 240, 240))
+
+    if enemy.rect_cacti.x / 2 <= playerposx <= enemy.rect_cacti.x / 2 + enemy.rect_cacti_width:
+        print("True")
+        player.stagePosX = 0
+        screen.fill((0, 0, 0))
+        enemy.display_counter = 1
+        enemy.death_counter += 1
+    if enemy.display_counter == 1:
+        screen.blit(textsurface, (20, 20))
+    print(enemy.display_counter)
+
+
 def load_bg():
     # background
     rel_x = player.stagePosX % WIDTH
@@ -375,21 +387,14 @@ while running:
 
     load_bg()
 
-    def rel_mob_pos(mob_rect_x):
-        if mob_rect_x <= WIDTH:
-            dist_to_w = (WIDTH - mob_rect_x) / 2
-        else:
-            dist_to_w = (WIDTH - mob_rect_x) / 2
-        return mob_rect_x + player.stagePosX + dist_to_w
-
     # draw all obstacles
     screen.blit(obstacle_lv1_size, (rel_mob_pos(mob.rect_lv1_1.x), mob.rect_lv1_1.y))
     screen.blit(obstacle_lv1_size, (rel_mob_pos(mob.rect_lv1_2.x), mob.rect_lv1_1.y))
     screen.blit(obstacle_lv1_size, (rel_mob_pos(mob.rect_lv1_3.x), mob.rect_lv1_1.y))
     screen.blit(obstacle_lv2_size, (rel_mob_pos(mob.rect_lv2_1.x), mob.rect_lv2_1.y))
 
-    screen.blit(enemy.cactus_size, (rel_mob_pos(enemy.rect.x), enemy.rect.y))
-    # screen.blit(enemy.plant_size, (rel_mob_pos(enemy.rect_plant.x), enemy.rect_plant.y))
+    screen.blit(enemy.cactus_size, (rel_mob_pos(enemy.rect_cacti.x), enemy.rect_cacti.y))
+    screen.blit(enemy.plant_size, (rel_mob_pos(enemy.rect_plant.x), enemy.rect_plant.y))
 
     # keep loop running at the right speed
     clock.tick(FPS)
@@ -403,14 +408,18 @@ while running:
     all_sprites.update()
 
     # check to see if player hit something
-    # collision_mob()
+    collision_mob()
+    collision_enemy()
+
     # hits = pygame.sprite.spritecollide(player, mobs, False)
     # hits = pygame.sprite.collide_rect(player, mob)
     # hits = pygame.sprite.spritecollide(player, enemies, False)
+    """
     hits = pygame.sprite.collide_rect(player, enemy)
     if hits:
         print("Ouch!")
     print(hits)
+    """
 
     # Draw / render
     all_sprites.draw(screen)
