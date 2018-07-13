@@ -1,8 +1,12 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import pygame
 import os  # to use path directory
 # import numpy as np  # to use numpy.asarray to convert a list to an array
 import pygame
 import RPi.GPIO as GPIO
+
 
 # text
 pygame.font.init()
@@ -121,6 +125,10 @@ class Player(pygame.sprite.Sprite):
         self.x = 0
         self.playerposy = ground_height
         self.stagePosX = 0
+
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
     def play_gif(self, gif_array, gif_speed, image_flip):
         self.idleIndex += 1
@@ -317,14 +325,12 @@ def collision_mob():
 
     # player left of obstacle
     if playerposx <= mob_posx - 20:
-        # print("if erfuellt:", playerposx, "kleiner als", mob_posx)
         allow_run_right()
         player.playerposy = ground_height
         if player.mobs_index > 0:
             player.mobs_index -= 1
     # player on top of obstacle
     elif mob_posx + mob_width * 2 >= playerposx >= mob_posx - 20 and player.rect.y <= mob_posy:
-        # print("elif erfuellt:", mob_posx + mob_width + 50, "groesser als", playerposx, "grosser als", mob_posx - 20)
         allow_run_right()
         allow_run_left()
         player.playerposy = mob_posy + 4
@@ -334,7 +340,6 @@ def collision_mob():
         allow_run_left()
     # player right of obstacle
     elif playerposx >= mob_posx + mob_width * 2:
-        # print("letzte elif:", playerposx, "groesser als", mob_posx + mob_width + 50)
         allow_run_left()
         player.playerposy = ground_height
         player.mobs_index += 1
