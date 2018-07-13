@@ -1,6 +1,8 @@
 import pygame
 import os  # to use path directory
 # import numpy as np  # to use numpy.asarray to convert a list to an array
+import pygame
+#import RPi.GPIO as GPIO
 
 # text
 pygame.font.init()
@@ -165,6 +167,19 @@ class Player(pygame.sprite.Sprite):
                     pygame.display.set_mode((WIDTH, HEIGHT))
                 else:
                     pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
+        """
+        if GPIO.input(23) == False:
+            print('Left Button Pressed.')
+            self.rect.bottom = HEIGHT - 100
+            self.image = pygame.image.load("JungleAssetPack/Character/sprites/jump.png").convert_alpha()
+        elif GPIO.input(24) == False:
+            print('Right Button Pressed.')
+            self.image = player.newHeight
+            self.rect.bottom = HEIGHT - 50 + 19
+        else:
+            print('Button not Pressed.')
+            self.rect.bottom = HEIGHT - 50
+         """
 
         # Key release: only one move
         if event.type == pygame.KEYUP:
