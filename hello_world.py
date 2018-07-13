@@ -218,7 +218,8 @@ class Enemy(pygame.sprite.Sprite):
 
     def update(self):
         # print(player.play_gif(self.plant, 100, False))
-        self.plant_size = self.play_gif(self.plant, 5, False)
+        #self.plant_size = self.play_gif(self.plant, 5, False)
+        self.plant_size = pygame.transform.scale(self.play_gif(self.plant, 5, False), (20, 30))
         self.rect_plant.x = 1825  # 1825
         self.rect_plant.y = HEIGHT - ground_size.get_rect().height - self.plant_size.get_height() + 15
 
