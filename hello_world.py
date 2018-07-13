@@ -104,7 +104,6 @@ class Player(pygame.sprite.Sprite):
         # index values for arrays
         self.arrayIndex = 0
         self.idleIndex = 0
-        self.runIndex = 0
 
         # player  # TODO: get_width() von allen Arrays nehmen
         self.playerwidth = self.idle[self.arrayIndex].get_width()
@@ -145,6 +144,7 @@ class Player(pygame.sprite.Sprite):
         # Key pressed: constant movement
         if self.key_left:
             self.play_gif(player.run, 3, True)
+            # print(self.play_gif(player.run, 3, True))
         elif self.key_right:
             self.play_gif(player.run, 3, False)
         elif key_state[pygame.K_DOWN]:
@@ -198,9 +198,27 @@ class Enemy(pygame.sprite.Sprite):
         self.rect_cacti.y = HEIGHT - ground_size.get_rect().height - self.cactus_size.get_height() + 15
         self.rect_cacti_width = self.cactus_size.get_rect().width
 
-        self.img_plant = pygame.image.load(pathTileset + "plant.png").convert_alpha()
-        self.plant_size = pygame.transform.scale(self.img_plant, (39, 47))
+        # self.img_plant = pygame.image.load(pathTileset + "plant.png").convert_alpha()
+        self.plant_size = pygame.transform.scale(self.plant[0], (39, 47))
         self.rect_plant = self.plant_size.get_rect()
+
+        # index values for arrays
+        self.arrayIndex = 0
+        self.idleIndex = 0
+
+    def play_gif(self, gif_array, gif_speed, image_flip):
+        self.idleIndex += 1
+        if self.idleIndex >= gif_speed:  # normale Geschw. = 1, halbe Geschw. = 2, doppelte Geschw. = 0.5
+            self.arrayIndex += 1
+            self.idleIndex = 0
+        if self.arrayIndex >= len(gif_array):
+            self.arrayIndex = 0
+        self.image = pygame.transform.flip(gif_array[self.arrayIndex], image_flip, False)
+        return self.image
+
+    def update(self):
+        # print(player.play_gif(self.plant, 100, False))
+        self.plant_size = self.play_gif(self.plant, 5, False)
         self.rect_plant.x = 1825  # 1825
         self.rect_plant.y = HEIGHT - ground_size.get_rect().height - self.plant_size.get_height() + 15
 
@@ -331,14 +349,14 @@ def collision_enemy():
     textsurface = myfont.render("Death Counter: " + counter_to_str, False, (240, 240, 240))
 
     if enemy.rect_cacti.x / 2 <= playerposx <= enemy.rect_cacti.x / 2 + enemy.rect_cacti_width:
-        print("True")
+        # print("True")
         player.stagePosX = 0
         screen.fill((0, 0, 0))
         enemy.display_counter = 1
         enemy.death_counter += 1
     if enemy.display_counter == 1:
         screen.blit(textsurface, (20, 20))
-    print(enemy.display_counter)
+    # print(enemy.display_counter)
 
 
 def load_bg():
@@ -406,6 +424,7 @@ while running:
 
     # Update
     all_sprites.update()
+    enemy.update()
 
     # check to see if player hit something
     collision_mob()
