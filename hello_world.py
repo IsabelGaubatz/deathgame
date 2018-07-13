@@ -317,14 +317,14 @@ def collision_mob():
 
     # player left of obstacle
     if playerposx <= mob_posx - 20:
-        # print("if erfüllt:", playerposx, "kleiner als", mob_posx)
+        # print("if erfuellt:", playerposx, "kleiner als", mob_posx)
         allow_run_right()
         player.playerposy = ground_height
         if player.mobs_index > 0:
             player.mobs_index -= 1
     # player on top of obstacle
     elif mob_posx + mob_width * 2 >= playerposx >= mob_posx - 20 and player.rect.y <= mob_posy:
-        # print("elif erfüllt:", mob_posx + mob_width + 50, "größer als", playerposx, "größer als", mob_posx - 20)
+        # print("elif erfuellt:", mob_posx + mob_width + 50, "groesser als", playerposx, "grosser als", mob_posx - 20)
         allow_run_right()
         allow_run_left()
         player.playerposy = mob_posy + 4
@@ -334,7 +334,7 @@ def collision_mob():
         allow_run_left()
     # player right of obstacle
     elif playerposx >= mob_posx + mob_width * 2:
-        # print("letzte elif:", playerposx, "größer als", mob_posx + mob_width + 50)
+        # print("letzte elif:", playerposx, "groesser als", mob_posx + mob_width + 50)
         allow_run_left()
         player.playerposy = ground_height
         player.mobs_index += 1
